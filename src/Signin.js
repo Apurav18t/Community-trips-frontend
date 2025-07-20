@@ -8,6 +8,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Auth.css";
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 export default function Signin() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -34,7 +36,7 @@ export default function Signin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:6969/user/login", {
+      const response = await fetch(`${API_URL}/user/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -59,7 +61,7 @@ export default function Signin() {
     try {
       const decoded = jwtDecode(credentialResponse.credential);
 
-      const response = await fetch("http://localhost:6969/user/google-login", {
+      const response = await fetch(`${API_URL}/user/google-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: decoded.email, name: decoded.name })

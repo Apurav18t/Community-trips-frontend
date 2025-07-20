@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./Auth.css";
 
 // ✅ Direct API URL used instead of .env for now
-const API_URL = "http://localhost:6969";
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function Signup() {
   const navigate = useNavigate();

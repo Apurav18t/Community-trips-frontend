@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import TripDetails from './TripDetails'; // new component
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function PlannerPage({ tripType = 'current' }) {
   const [trips, setTrips] = useState([]);
@@ -13,11 +14,11 @@ export default function PlannerPage({ tripType = 'current' }) {
         let url = "";
 
         if (tripType === 'upcoming') {
-          url = `http://localhost:6969/trips/getFilterTrips?type=upcoming&addedBy=${userId}`;
+          url = `${API_URL}/trips/getFilterTrips?type=upcoming&addedBy=${userId}`;
         } else if (tripType === 'past') {
-          url = `http://localhost:6969/trips/getFilterTrips?type=past&addedBy=${userId}`;
+          url = `${API_URL}/trips/getFilterTrips?type=past&addedBy=${userId}`;
         } else {
-          url = `http://localhost:6969/trips/getFilterTrips?type=current&addedBy=${userId}`;
+          url = `${API_URL}/trips/getFilterTrips?type=current&addedBy=${userId}`;
         }
 
         console.log("🌐 Fetching trips:", url);

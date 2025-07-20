@@ -6,6 +6,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './ItineraryPage.css';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function ItineraryPage() {
   const { tripId } = useParams();
@@ -41,7 +42,7 @@ export default function ItineraryPage() {
     const fetchTripDetails = async () => {
       try {
         setLoading(true);
-        const tripRes = await axios.get(`http://localhost:6969/trips/detail?id=${tripId}`, authHeader);
+        const tripRes = await axios.get(`${API_URL}/trips/detail?id=${tripId}`, authHeader);
         const tripData = tripRes.data?.trip || tripRes.data?.data;
 
         if (tripData?.itineraryData) {
@@ -50,12 +51,12 @@ export default function ItineraryPage() {
           setFinalItinerary(tripData.itineraryData);
         } else {
           // 🚨 Generate if not found
-          const genRes = await axios.post('http://localhost:6969/itinerary/generate', { tripId }, authHeader);
+          const genRes = await axios.post(`${API_URL}/itinerary/generate`, { tripId }, authHeader);
           setInitialItinerary(genRes.data.data);
           setFinalItinerary(genRes.data.data);
 
           // ✅ Save it
-          await axios.put('http://localhost:6969/itinerary/save', {
+          await axios.put(`${API_URL}/itinerary/save`, {
             tripId,
             itineraryData: genRes.data.data
           }, authHeader);
@@ -75,7 +76,7 @@ export default function ItineraryPage() {
 
     const fetchTravelers = async () => {
       try {
-        const res = await axios.get(`http://localhost:6969/trips/invites?tripId=${tripId}`, authHeader);
+        const res = await axios.get(`${API_URL}/trips/invites?tripId=${tripId}`, authHeader);
         if (res.data.success) {
           setTravelers(res.data.data);
         }
@@ -93,7 +94,7 @@ export default function ItineraryPage() {
     try {
       setLoading(true);
       const res = await axios.post(
-        'http://localhost:6969/itinerary/re-generate',
+        `${API_URL}/itinerary/re-generate`,
         { tripId, prompt: userPrompt },
         authHeader
       );
@@ -102,7 +103,7 @@ export default function ItineraryPage() {
       setUserPrompt('');
 
       // ✅ Save regenerated itinerary
-      await axios.put('http://localhost:6969/itinerary/save', {
+      await axios.put(`${API_URL}/itinerary/save`, {
         tripId,
         itineraryData: res.data.data
       }, authHeader);
@@ -123,7 +124,7 @@ export default function ItineraryPage() {
     }
 
     try {
-      const res = await axios.post('http://localhost:6969/trips/inviteUser', {
+      const res = await axios.post(`${API_URL}/trips/inviteUser`, {
         email: inviteEmail,
         tripId,
       }, authHeader);
@@ -131,7 +132,7 @@ export default function ItineraryPage() {
       if (res.data.success) {
         toast.success("Invitation sent!");
         setInviteEmail('');
-        const updated = await axios.get(`http://localhost:6969/trips/invites?tripId=${tripId}`, authHeader);
+        const updated = await axios.get(`${API_URL}/trips/invites?tripId=${tripId}`, authHeader);
         if (updated.data.success) {
           setTravelers(updated.data.data);
         }

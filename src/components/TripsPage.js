@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './TripsPage.css';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function TripsPage({ type = 'all' }) {
   const [trips, setTrips] = useState([]);
@@ -25,8 +26,8 @@ export default function TripsPage({ type = 'all' }) {
 
         let url =
           type === 'current' || type === 'upcoming' || type === 'past'
-            ? `http://localhost:6969/trips/getFilterTrips?addedBy=${userId}&type=${type}`
-            : `http://localhost:6969/trips/list?addedBy=${userId}`;
+            ? `${API_URL}/trips/getFilterTrips?addedBy=${userId}&type=${type}`
+            : `${API_URL}/trips/list?addedBy=${userId}`;
 
         const response = await fetch(url, {
           method: 'GET',

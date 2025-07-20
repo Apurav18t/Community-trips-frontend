@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./Auth.css"; // reuse your auth styles
+const API_URL = process.env.REACT_APP_API_URL;
+
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -7,7 +9,7 @@ export default function ForgotPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:6969/user/forgotPasswordOTP", {
+      const response = await fetch(`${API_URL}/user/forgotPasswordOTP`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email })

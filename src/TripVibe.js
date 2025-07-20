@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function TripVibe() {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ export default function TripVibe() {
       console.log("🚀 Sending to itinerary:", { tripId, selectedVibes });
       localStorage.setItem("selectedVibes", JSON.stringify(selectedVibes));
 
-      const response = await fetch(`http://localhost:6969/itinerary/generate`, {
+      const response = await fetch(`${API_URL}/itinerary/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

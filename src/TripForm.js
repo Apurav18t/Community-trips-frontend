@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./TripForm.css";
+const API_URL = process.env.REACT_APP_API_URL;
+
 
 const TripForm = () => {
   const [form, setForm] = useState({
@@ -82,7 +84,7 @@ const TripForm = () => {
     console.log("🚀 Submitting payload:", payload);
 
     try {
-      const response = await fetch("http://localhost:6969/trips/add", {
+      const response = await fetch(`${API_URL}/trips/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -99,7 +101,7 @@ const TripForm = () => {
 
         try {
           const locationsStr = payload.locations.map(l => l.locationName).join(", ");
-          const recResponse = await fetch("http://localhost:6969/trips/generate-highlight", {
+          const recResponse = await fetch(`${API_URL}/trips/generate-highlight`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

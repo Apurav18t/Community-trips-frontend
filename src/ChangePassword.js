@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './Auth.css';
+const API_URL = process.env.REACT_APP_API_URL;
+
 
 export default function ChangePassword() {
     const [email, setEmail] = useState('');
@@ -21,7 +23,7 @@ export default function ChangePassword() {
         }
 
         try {
-            const response = await fetch("http://localhost:6969/user/verifyOTP", {
+            const response = await fetch(`${API_URL}/user/verifyOTP`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
