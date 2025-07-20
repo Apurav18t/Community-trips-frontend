@@ -1,0 +1,203 @@
+.itinerary-page {
+  display: flex;
+  height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+}
+
+.left-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow: hidden;
+  background: #f9f9f9;
+}
+
+.itinerary-scroll-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.chatbox {
+  background: #fff;
+  padding: 15px;
+  border-top: 1px solid #ddd;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.chatbox textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+.chatbox button {
+  margin-top: 10px;
+  background-color: #6A5ACD;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.right-panel {
+  width: 500px;
+  background: #fafafa;
+  padding: 20px;
+  border-left: 1px solid #eee;
+  overflow-y: auto;
+}
+
+.tab-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.tab-buttons button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button.active-tab {
+  background: #6A5ACD;
+}
+
+.tab-content ul {
+  padding-left: 20px;
+}
+
+.itinerary-section {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.date-range {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+.itinerary-page p {
+  color: #555;
+}
+
+.itinerary-scroll-content::-webkit-scrollbar,
+.right-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.itinerary-scroll-content::-webkit-scrollbar-thumb,
+.right-panel::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.itinerary-scroll-content::-webkit-scrollbar-track,
+.right-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.itinerary-scroll-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.right-panel {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+@media (max-width: 768px) {
+  .itinerary-page {
+    flex-direction: column;
+  }
+
+  .right-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #eee;
+  }
+
+  .left-panel {
+    height: 60%;
+  }
+}
+
+/* Travelers Tab */
+.travelers-tab {
+  padding: 10px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+/* Invite form styles */
+.invite-form {
+  display: flex;
+  margin-top: 15px;
+  gap: 8px;
+}
+
+.invite-form input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.invite-form button {
+  padding: 8px 14px;
+  background-color: #6A5ACD;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.invite-form button:hover {
+  background-color: #5a4ec7;
+}
+
+.travelers-tab li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-label {
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.status-label.accepted {
+  background-color: #dff0d8;
+  color: #2e7d32;
+}
+
+.status-label.rejected {
+  background-color: #f8d7da;
+  color: #c62828;
+}
+
+.status-label.pending {
+  background-color: #eeeeee;
+  color: #666;
+}
