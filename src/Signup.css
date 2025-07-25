@@ -1,0 +1,64 @@
+.signup-container {
+  max-width: 400px;
+  margin: 80px auto;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+.signup-container h2 {
+  margin-bottom: 10px;
+}
+
+.signup-container p {
+  color: #666;
+}
+
+form input {
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 30px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+form button {
+  width: 100%;
+  padding: 15px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+.or-divider {
+  margin: 20px 0;
+  font-weight: bold;
+}
+
+.google-btn {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.google-btn img {
+  width: 20px;
+  margin-right: 10px;
+}
+
+.bottom-text {
+  margin-top: 20px;
+}
+
+.bottom-text a {
+  text-decoration: none;
+  font-weight: bold;
+}

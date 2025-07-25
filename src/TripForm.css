@@ -1,0 +1,197 @@
+.trip-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: #f9f9f9;
+  min-height: 100vh;
+}
+
+.trip-form-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+}
+
+.trip-form-card h2 {
+  text-align: left;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  color: #222;
+}
+
+.trip-form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.2rem;
+}
+
+.trip-form-group label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #333;
+}
+
+.trip-form-group input,
+.trip-form-group select,
+.trip-form-group textarea {
+  padding: 0.8rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.6rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.trip-form-group input:focus,
+.trip-form-group select:focus,
+.trip-form-group textarea:focus {
+  border-color: #000;
+}
+
+/* Destinations */
+.destination-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.destination-field input {
+  flex: 1;
+}
+
+.destination-field button {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: red;
+}
+
+.trip-form-group button {
+  background: black;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  width: fit-content;
+}
+
+/* Date input layout */
+.trip-form-dates {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+
+.trip-form-dates .trip-form-group {
+  flex: 1;
+}
+
+/* Travellers section */
+.trip-form-travellers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.traveller-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 22%;
+}
+
+.traveller-counter span {
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.traveller-counter div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: #f1f1f1;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
+}
+
+.traveller-counter button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.traveller-counter button:hover {
+  background: #444;
+}
+
+/* Textarea */
+.trip-form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Road trip checkbox alignment */
+.trip-form-group.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  font-weight: 500;
+}
+
+/* Submit button */
+.trip-form-submit {
+  width: 100%;
+  padding: 1rem;
+  background: #000;
+  color: white;
+  border: none;
+  border-radius: 0.6rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 1rem;
+}
+
+.trip-form-submit:hover {
+  background: #333;
+}
+/* Loader Spinner */
+.loader {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #000;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
