@@ -9,6 +9,10 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.10.0",
+<<<<<<< HEAD
+=======
+    "dotenv": "^17.2.0",
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
     "jwt-decode": "^4.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

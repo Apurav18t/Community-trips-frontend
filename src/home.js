@@ -1,11 +1,17 @@
 import React from 'react';
+<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+=======
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
 import Footer from './Footer';
 import Navbar from './Navbar';
 
 function Home() {
+<<<<<<< HEAD
   const navigate = useNavigate(); // Initialize navigation hook
 
+=======
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
   return (
     <div className="App" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '1.6' }}>
       <Navbar />
@@ -18,13 +24,18 @@ function Home() {
           paddingBottom: '40px'
         }}
       >
+<<<<<<< HEAD
         <header style={{ padding: '30px 20px', textAlign: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+=======
+        <header style={{ padding: '30px 20px',textAlign: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
           <h1 style={{ fontSize: '36px', marginBottom: '10px' }}>Community Trips</h1>
           <p style={{ fontSize: '18px' }}>Plan smarter with AI – Your next adventure starts here.</p>
         </header>
         <section style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: 'rgba(0,0,0,0.4)' }}>
           <h2 style={{ fontSize: '28px', marginBottom: '10px' }}>Welcome, Traveler! 🌍</h2>
           <p>Create your custom trip itinerary with just a few clicks.</p>
+<<<<<<< HEAD
           <button
             onClick={() => navigate('/signup')} // Redirect to signup
             style={{
@@ -38,11 +49,26 @@ function Home() {
               marginTop: '20px'
             }}
           >
+=======
+          <button style={{
+            background: '#2E8B57',
+            color: '#fff',
+            padding: '12px 24px',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '16px',
+            cursor: 'pointer',
+            marginTop: '20px'
+          }}>
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
             Start Planning
           </button>
         </section>
       </div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
       <section style={{ backgroundColor: '#f8f9fa', padding: '40px 20px' }}>
         <h3 style={{ fontSize: '24px', textAlign: 'center', marginBottom: '30px' }}>Why Use Community Trips?</h3>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px' }}>
@@ -51,7 +77,10 @@ function Home() {
           <FeatureCard title="Community Sharing" desc="Explore and share trips created by other travelers." />
         </div>
       </section>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
       <section style={{ padding: '40px 20px', textAlign: 'center' }}>
         <h3 style={{ fontSize: '24px', marginBottom: '30px' }}>How It Works</h3>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}>
@@ -60,7 +89,10 @@ function Home() {
           <StepCard step="3" title="Explore & Share" desc="Save, tweak, or publish your trip for others." />
         </div>
       </section>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
       <Footer />
     </div>
   );

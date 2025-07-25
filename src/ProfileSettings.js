@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
+=======
+const API_URL = process.env.REACT_APP_API_URL;
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
 
 export default function ProfileSettings() {
   const navigate = useNavigate();
@@ -28,7 +32,11 @@ export default function ProfileSettings() {
       const userId = parsedUser.id;
       const token = parsedUser.access_token;
 
+<<<<<<< HEAD
       fetch(`http://localhost:6969/user/details/${userId}`, {
+=======
+      fetch(`${API_URL}/user/details/${userId}`, {
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`
@@ -89,7 +97,11 @@ export default function ProfileSettings() {
     }
 
     try {
+<<<<<<< HEAD
       const response = await fetch(`http://localhost:6969/user/updateProfile/${userId}`, {
+=======
+      const response = await fetch(`${API_URL}/user/updateProfile/${userId}`, {
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

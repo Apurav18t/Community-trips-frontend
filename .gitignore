@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
 # dependencies
 /node_modules
 /.pnp
@@ -6,18 +11,26 @@
 # testing
 /coverage
 
+<<<<<<< HEAD
 # production build
+=======
+# production
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
 /build
 
 # misc
 .DS_Store
 .env
+<<<<<<< HEAD
 .env.*.local
+=======
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
+<<<<<<< HEAD
 # log files
 npm-debug.log*
 yarn-debug.log*
@@ -38,3 +51,8 @@ pnpm-debug.log*
 # Windows system files
 Thumbs.db
 ehthumbs.db
+=======
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f

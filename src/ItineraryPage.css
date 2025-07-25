@@ -201,6 +201,7 @@ button.active-tab {
   background-color: #eeeeee;
   color: #666;
 }
+<<<<<<< HEAD
 
 .attractions-grid {
   display: grid;
@@ -365,3 +366,5 @@ grid-template-columns: repeat(2, 1fr);
   font-size: 13px;
   margin: 2px 0;
 }
+=======
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f

@@ -178,6 +178,7 @@
 .trip-form-submit:hover {
   background: #333;
 }
+<<<<<<< HEAD
 /* Loader Spinner */
 .loader {
   border: 3px solid #f3f3f3;
@@ -195,3 +196,5 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+=======
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f

@@ -2,6 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './TripsPage.css';
+<<<<<<< HEAD
+=======
+const API_URL = process.env.REACT_APP_API_URL;
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
 
 export default function TripsPage({ type = 'all' }) {
   const [trips, setTrips] = useState([]);
@@ -25,8 +29,13 @@ export default function TripsPage({ type = 'all' }) {
 
         let url =
           type === 'current' || type === 'upcoming' || type === 'past'
+<<<<<<< HEAD
             ? `http://localhost:6969/trips/getFilterTrips?addedBy=${userId}&type=${type}`
             : `http://localhost:6969/trips/list?addedBy=${userId}`;
+=======
+            ? `${API_URL}/trips/getFilterTrips?addedBy=${userId}&type=${type}`
+            : `${API_URL}/trips/list?addedBy=${userId}`;
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
 
         const response = await fetch(url, {
           method: 'GET',
@@ -41,8 +50,12 @@ export default function TripsPage({ type = 'all' }) {
           throw new Error(data.message || "Failed to load trips");
         }
 
+<<<<<<< HEAD
         setTrips((data.data || []).filter(trip => !trip.isDeleted));
 
+=======
+        setTrips(data.data || []);
+>>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
       } catch (err) {
         console.error("Trip fetching error:", err);
         setError(err.message || "Something went wrong while fetching your trips.");
