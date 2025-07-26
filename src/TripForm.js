@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./TripForm.css";
-const API_URL = "http://localhost:6969";
+const API_URL = "https://community-trips-backend.onrender.com";
 
 const TripForm = () => {
   const [form, setForm] = useState({

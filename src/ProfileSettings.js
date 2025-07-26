@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-const API_URL = "http://localhost:6969";
+const API_URL = "https://community-trips-backend.onrender.com";
 
 export default function ProfileSettings() {
   const navigate = useNavigate();

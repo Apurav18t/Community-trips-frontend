@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './TripsPage.css';
-const API_URL = "http://localhost:6969";
+const API_URL = "https://community-trips-backend.onrender.com";
 
 
 export default function TripsPage({ type = 'all' }) {
