@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import TripDetails from './TripDetails'; // new component
-<<<<<<< HEAD
-=======
-const API_URL = process.env.REACT_APP_API_URL;
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
+const API_URL = "http://localhost:6969";
 
 export default function PlannerPage({ tripType = 'current' }) {
   const [trips, setTrips] = useState([]);
@@ -17,19 +14,11 @@ export default function PlannerPage({ tripType = 'current' }) {
         let url = "";
 
         if (tripType === 'upcoming') {
-<<<<<<< HEAD
-          url = `http://localhost:6969/trips/getFilterTrips?type=upcoming&addedBy=${userId}`;
-        } else if (tripType === 'past') {
-          url = `http://localhost:6969/trips/getFilterTrips?type=past&addedBy=${userId}`;
-        } else {
-          url = `http://localhost:6969/trips/getFilterTrips?type=current&addedBy=${userId}`;
-=======
           url = `${API_URL}/trips/getFilterTrips?type=upcoming&addedBy=${userId}`;
         } else if (tripType === 'past') {
           url = `${API_URL}/trips/getFilterTrips?type=past&addedBy=${userId}`;
         } else {
           url = `${API_URL}/trips/getFilterTrips?type=current&addedBy=${userId}`;
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
         }
 
         console.log("🌐 Fetching trips:", url);

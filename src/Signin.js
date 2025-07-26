@@ -8,19 +8,12 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Auth.css";
 
-<<<<<<< HEAD
+const API_URL = "http://localhost:6969";
+
 export default function Signin() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-=======
-const API_URL = process.env.REACT_APP_API_URL;
-
-export default function Signin() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
@@ -43,17 +36,10 @@ export default function Signin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-<<<<<<< HEAD
-      const response = await fetch("http://localhost:6969/user/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-=======
       const response = await fetch(`${API_URL}/user/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
+        body: JSON.stringify({ email, password }),
       });
 
       const result = await response.json();
@@ -63,7 +49,6 @@ export default function Signin() {
         toast.success("Sign in successful!");
         setTimeout(() => navigate("/planner"), 1000);
       } else {
-<<<<<<< HEAD
         // 🔁 Handle unverified user separately
         if (
           result.message ===
@@ -74,9 +59,6 @@ export default function Signin() {
         } else {
           toast.error(`Signin failed: ${result.message || "Unknown error"}`);
         }
-=======
-        toast.error(`Signin failed: ${result.message || "Unknown error"}`);
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
       }
     } catch (err) {
       console.error("Signin error:", err);
@@ -88,17 +70,10 @@ export default function Signin() {
     try {
       const decoded = jwtDecode(credentialResponse.credential);
 
-<<<<<<< HEAD
-      const response = await fetch("http://localhost:6969/user/google-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: decoded.email, name: decoded.name }),
-=======
       const response = await fetch(`${API_URL}/user/google-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: decoded.email, name: decoded.name })
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
+        body: JSON.stringify({ email: decoded.email, name: decoded.name }),
       });
 
       const result = await response.json();

@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./TripForm.css";
-<<<<<<< HEAD
-=======
-const API_URL = process.env.REACT_APP_API_URL;
-
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
+const API_URL = "http://localhost:6969";
 
 const TripForm = () => {
   const [form, setForm] = useState({
@@ -22,10 +18,7 @@ const TripForm = () => {
     pets: 0,
   });
 
-<<<<<<< HEAD
   const [loading, setLoading] = useState(false); // ⏳ Add loading state
-=======
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -60,25 +53,15 @@ const TripForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-<<<<<<< HEAD
     setLoading(true); // 🔄 Start loader
 
     const user = JSON.parse(localStorage.getItem("user"));
     const access_token = localStorage.getItem("access_token");
-=======
-
-    const user = JSON.parse(localStorage.getItem("user"));
-    const access_token = localStorage.getItem("access_token"); // ✅ Get JWT token
-    console.log("ACCESSTOKEN:", access_token);
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
     const userId = user?.id || user?._id;
 
     if (!userId || !access_token) {
       alert("User not logged in or token missing.");
-<<<<<<< HEAD
       setLoading(false);
-=======
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
       return;
     }
 
@@ -92,72 +75,40 @@ const TripForm = () => {
         .filter(dest => dest.trim())
         .map(loc => ({ locationName: loc })),
       numberOfAdults: form.adults,
-<<<<<<< HEAD
       numberOfChildern: form.children,
-=======
-      numberOfChildern: form.children, // match backend typo
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
       numberOfInfants: form.infants,
       numberOfPets: form.pets,
       addedBy: userId,
       isRoadTrip: form.isRoadTrip
     };
 
-<<<<<<< HEAD
-    try {
-      const response = await fetch("http://localhost:6969/trips/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${access_token}`
-=======
-    console.log("🚀 Submitting payload:", payload);
-
     try {
       const response = await fetch(`${API_URL}/trips/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${access_token}` // ✅ Add Authorization header
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
+          "Authorization": `Bearer ${access_token}`
         },
         body: JSON.stringify(payload)
       });
 
       const data = await response.json();
-<<<<<<< HEAD
-=======
-      console.log("✅ Trip Created:", data);
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
 
       if (data.success) {
         localStorage.setItem("trip", JSON.stringify(data.data));
 
         try {
           const locationsStr = payload.locations.map(l => l.locationName).join(", ");
-<<<<<<< HEAD
-          const recResponse = await fetch("http://localhost:6969/trips/generate-highlight", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${access_token}`
-=======
           const recResponse = await fetch(`${API_URL}/trips/generate-highlight`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Authorization": `Bearer ${access_token}` // ✅ Also add token here
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
+              "Authorization": `Bearer ${access_token}`
             },
             body: JSON.stringify({ locations: locationsStr })
           });
 
           const recData = await recResponse.json();
-<<<<<<< HEAD
-=======
-          console.log("🌴 Recommendations:", recData);
-
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
           if (recData.success) {
             localStorage.setItem("recommendations", JSON.stringify(recData.data));
           }
@@ -172,11 +123,8 @@ const TripForm = () => {
     } catch (err) {
       console.error("Error:", err);
       alert("Something went wrong.");
-<<<<<<< HEAD
     } finally {
       setLoading(false); // ✅ End loader
-=======
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
     }
   };
 
@@ -229,10 +177,7 @@ const TripForm = () => {
               value={form.startDate}
               onChange={handleChange}
               required
-<<<<<<< HEAD
                min={new Date().toISOString().split("T")[0]} // ✅ Prevent past dates
-=======
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
             />
           </div>
           <div className="trip-form-group">
@@ -243,12 +188,9 @@ const TripForm = () => {
               value={form.endDate}
               onChange={handleChange}
               required
-<<<<<<< HEAD
                   min={form.startDate || new Date().toISOString().split("T")[0]} // ✅ End date cannot be before start date
 
 
-=======
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
             />
           </div>
         </div>
@@ -302,7 +244,6 @@ const TripForm = () => {
         </div>
 
         <div className="trip-form-group checkbox-group">
-<<<<<<< HEAD
           <input
             type="checkbox"
             name="isRoadTrip"
@@ -323,21 +264,6 @@ const TripForm = () => {
           }}
         >
           {loading ? "Planning..." : "Plan My Trip"}
-=======
-  <input
-    type="checkbox"
-    name="isRoadTrip"
-    checked={form.isRoadTrip}
-    onChange={handleChange}
-    id="roadtrip"
-  />
-  <label htmlFor="roadtrip">This is a road trip</label>
-</div>
-
-
-        <button className="trip-form-submit" type="submit">
-          Plan My Trip
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
         </button>
       </form>
     </div>

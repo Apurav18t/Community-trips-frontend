@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-<<<<<<< HEAD
-=======
-const API_URL = process.env.REACT_APP_API_URL;
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
+
+const API_URL = "http://localhost:6969";
 
 export default function TripVibe() {
   const navigate = useNavigate();
   const [trip, setTrip] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [selectedVibes, setSelectedVibes] = useState({});
-<<<<<<< HEAD
   const [loading, setLoading] = useState(false); // ⏳ loader
-=======
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
 
   useEffect(() => {
     try {
@@ -54,11 +49,8 @@ export default function TripVibe() {
   };
 
   const handleCreateItinerary = async () => {
-<<<<<<< HEAD
     if (loading) return;
 
-=======
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
     const tripId = trip?._id || trip?.id;
     const access_token = localStorage.getItem("access_token");
 
@@ -74,35 +66,19 @@ export default function TripVibe() {
       return;
     }
 
-<<<<<<< HEAD
     setLoading(true); // ⏳ start loading
 
-=======
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
     try {
       console.log("🚀 Sending to itinerary:", { tripId, selectedVibes });
       localStorage.setItem("selectedVibes", JSON.stringify(selectedVibes));
 
-<<<<<<< HEAD
-      const response = await fetch(`http://localhost:6969/itinerary/generate`, {
+      const response = await fetch(`${API_URL}/itinerary/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${access_token}`
         },
         body: JSON.stringify({ tripId, selectedVibes })
-=======
-      const response = await fetch(`${API_URL}/itinerary/generate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${access_token}` // ✅ Added Authorization header
-        },
-        body: JSON.stringify({
-          tripId,
-          selectedVibes
-        })
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
       });
 
       if (!response.ok) {
@@ -123,11 +99,8 @@ export default function TripVibe() {
     } catch (err) {
       console.error("❌ Error creating itinerary:", err);
       alert("Something went wrong while creating the itinerary.");
-<<<<<<< HEAD
     } finally {
       setLoading(false); // ✅ stop loading
-=======
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
     }
   };
 
@@ -173,7 +146,6 @@ export default function TripVibe() {
         <p>No recommendations found. Please plan a trip first.</p>
       )}
 
-<<<<<<< HEAD
       <button
         style={{
           marginTop: "30px",
@@ -192,14 +164,6 @@ export default function TripVibe() {
         disabled={loading}
       >
         {loading ? "Creating Itinerary..." : "Create Itinerary"}
-=======
-      <button style={{
-        marginTop: "30px", display: "block", width: "100%", padding: "12px",
-        fontSize: "16px", background: "#4f46e5", color: "white",
-        border: "none", borderRadius: "8px", cursor: "pointer"
-      }} onClick={handleCreateItinerary}>
-        Create Itinerary
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
       </button>
     </div>
   );

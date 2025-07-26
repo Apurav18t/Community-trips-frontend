@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-<<<<<<< HEAD
-=======
-const API_URL = process.env.REACT_APP_API_URL;
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
+const API_URL = "http://localhost:6969";
 
 export default function TripDetails() {
   const { id } = useParams();
@@ -14,11 +11,7 @@ export default function TripDetails() {
   useEffect(() => {
     const fetchTrip = async () => {
       try {
-<<<<<<< HEAD
-        const res = await fetch(`http://localhost:6969/trips/detail?id=${id}`);
-=======
         const res = await fetch(`${API_URL}/trips/detail?id=${id}`);
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
         const data = await res.json();
         console.log("Trip fetched:", data);
         if (data.success) {

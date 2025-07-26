@@ -9,10 +9,7 @@ import ForgotPassword from './ForgotPassword';
 import ChangePassword from './ChangePassword';
 import TripForm from './TripForm';
 import TripDetails from './components/TripDetails';
-<<<<<<< HEAD
 import VerifyUser from './Verifyuser'; // ✅ NEW
-=======
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
 
 import Sidebar from './components/Sidebar';
 import TopNavbar from './components/topnavbar';
@@ -35,10 +32,7 @@ export default function App() {
         <Route path="/signin" element={<Signin />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/change-password" element={<ChangePassword />} />
-<<<<<<< HEAD
        <Route path="/verifyUser" element={<VerifyUser />} /> {/* ✅ New OTP verify route */}
-=======
->>>>>>> d74fa2308f9aaebe8d1c7f1dc9520e3ab7462e9f
 
         <Route path="/create-trip" element={<TripForm />} />
         <Route path="/tripvibe" element={<TripVibe />} />

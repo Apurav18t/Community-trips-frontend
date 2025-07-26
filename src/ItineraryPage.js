@@ -7,6 +7,12 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './ItineraryPage.css';
 
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import default styles
+
+const API_URL = "http://localhost:6969";
+
+
 export default function ItineraryPage() {
   const { tripId } = useParams();
   const navigate = useNavigate();
@@ -33,13 +39,25 @@ export default function ItineraryPage() {
   const [tipsContent, setTipsContent] = useState('');
   const [tipsLoading, setTipsLoading] = useState(false);
 
+  const formatTipsAsBullets = (tips) => {
+  if (!tips) return '';
+  // Split by newline or full stop and filter empty lines
+  const lines = tips
+    .split(/\n|\. /)
+    .map(line => line.trim())
+    .filter(line => line.length > 2);
+
+  return lines.map(line => `- ${line.replace(/^- /, '')}`).join('\n');
+};
+
+
   const access_token = localStorage.getItem('access_token');
   const authHeader = { headers: { Authorization: `Bearer ${access_token}` } };
 
   const fetchTripTips = async () => {
       try {
         setTipsLoading(true);
-        const res = await axios.post('http://localhost:6969/trips/tripTips', { tripId }, authHeader);
+        const res = await axios.post(`${API_URL}/trips/tripTips`, { tripId }, authHeader);
         if (res.data.success) {
           setTipsContent(res.data.tips);
         } else {
@@ -63,17 +81,17 @@ export default function ItineraryPage() {
     const fetchTripDetails = async () => {
       try {
         setLoading(true);
-        const tripRes = await axios.get(`http://localhost:6969/trips/detail?id=${tripId}`, authHeader);
+        const tripRes = await axios.get(`${API_URL}/trips/detail?id=${tripId}`, authHeader);
         const tripData = tripRes.data?.trip || tripRes.data?.data;
 
         if (tripData?.itineraryData) {
           setInitialItinerary(tripData.itineraryData);
           setFinalItinerary(tripData.itineraryData);
         } else {
-          const genRes = await axios.post('http://localhost:6969/itinerary/generate', { tripId }, authHeader);
+          const genRes = await axios.post(`${API_URL}/itinerary/generate`, { tripId }, authHeader);
           setInitialItinerary(genRes.data.data);
           setFinalItinerary(genRes.data.data);
-          await axios.put('http://localhost:6969/itinerary/save', { tripId, itineraryData: genRes.data.data }, authHeader);
+          await axios.put(`${API_URL}/itinerary/save`, { tripId, itineraryData: genRes.data.data }, authHeader);
         }
 
         setTripName(tripData.tripName);
@@ -90,7 +108,7 @@ export default function ItineraryPage() {
 
     const fetchTravelers = async () => {
       try {
-        const res = await axios.get(`http://localhost:6969/trips/invites?tripId=${tripId}`, authHeader);
+        const res = await axios.get(`${API_URL}/trips/invites?tripId=${tripId}`, authHeader);
         if (res.data.success) setTravelers(res.data.data);
       } catch (err) {
         console.error("Error fetching travelers:", err);
@@ -108,10 +126,10 @@ export default function ItineraryPage() {
   const handleReGenerate = async () => {
     try {
       setLoading(true);
-      const res = await axios.post('http://localhost:6969/itinerary/re-generate', { tripId, prompt: userPrompt }, authHeader);
+      const res = await axios.post(`${API_URL}/itinerary/re-generate`, { tripId, prompt: userPrompt }, authHeader);
       setFinalItinerary(res.data.data);
       setUserPrompt('');
-      await axios.put('http://localhost:6969/itinerary/save', { tripId, itineraryData: res.data.data }, authHeader);
+      await axios.put(`${API_URL}/itinerary/save`, { tripId, itineraryData: res.data.data }, authHeader);
       toast.success("Itinerary updated!");
     } catch (err) {
       console.error("Error regenerating itinerary:", err);
@@ -127,11 +145,11 @@ export default function ItineraryPage() {
       return;
     }
     try {
-      const res = await axios.post('http://localhost:6969/trips/inviteUser', { email: inviteEmail, tripId }, authHeader);
+      const res = await axios.post(`${API_URL}/trips/inviteUser`, { email: inviteEmail, tripId }, authHeader);
       if (res.data.success) {
         toast.success("Invitation sent!");
         setInviteEmail('');
-        const updated = await axios.get(`http://localhost:6969/trips/invites?tripId=${tripId}`, authHeader);
+        const updated = await axios.get(`${API_URL}/trips/invites?tripId=${tripId}`, authHeader);
         if (updated.data.success) setTravelers(updated.data.data);
       } else {
         toast.error(res.data.message || "Failed to send invite.");
@@ -141,31 +159,43 @@ export default function ItineraryPage() {
       toast.error("Something went wrong while sending invite.");
     }
   };
-const handleDeleteTrip = async () => {
-  const confirmDelete = window.confirm("Are you sure you want to delete this trip?");
-  if (!confirmDelete) return;
+const handleDeleteTrip = () => {
+  confirmAlert({
+    title: 'Are you sure?',
+    message: 'This action cannot be undone. It will permanently delete your trip and all data.',
+    buttons: [
+      {
+        label: 'Delete',
+        onClick: async () => {
+          try {
+            setLoading(true);
+            const res = await axios.delete(`${API_URL}/trips/delete?id=${tripId}`, {
+              headers: {
+                Authorization: `Bearer ${access_token}`,
+                'Content-Type': 'application/json'
+              }
+            });
 
-  try {
-    setLoading(true);
-    const res = await axios.delete(`http://localhost:6969/trips/delete?id=${tripId}`, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        'Content-Type': 'application/json'
+            if (res.data.success) {
+              toast.success("Trip deleted successfully.");
+              navigate("/planner");
+            } else {
+              toast.error(res.data.message || "Failed to delete trip.");
+            }
+          } catch (err) {
+            console.error("Error deleting trip:", err);
+            toast.error("Something went wrong while deleting the trip.");
+          } finally {
+            setLoading(false);
+          }
+        }
+      },
+      {
+        label: 'Cancel',
+        onClick: () => {} // do nothing
       }
-    });
-
-    if (res.data.success) {
-      toast.success("Trip deleted successfully.");
-      navigate("/planner");
-    } else {
-      toast.error(res.data.message || "Failed to delete trip.");
-    }
-  } catch (err) {
-    console.error("Error deleting trip:", err);
-    toast.error("Something went wrong while deleting the trip.");
-  } finally {
-    setLoading(false);
-  }
+    ]
+  });
 };
 
 
@@ -433,13 +463,14 @@ const handleDeleteTrip = async () => {
 
           {activeTab === 'tips' && (
             <div className="tips-tab">
-              {tipsLoading ? (
-                <p>Loading travel tips…</p>
-              ) : tipsContent ? (
-                <ReactMarkdown>{tipsContent}</ReactMarkdown>
-              ) : (
-                <p>No travel tips available for this trip.</p>
-              )}
+             {tipsLoading ? (
+  <p>Loading travel tips…</p>
+) : tipsContent ? (
+  <ReactMarkdown>{formatTipsAsBullets(tipsContent)}</ReactMarkdown>
+) : (
+  <p>No travel tips available for this trip.</p>
+)}
+
             </div>
           )}
         </div>
