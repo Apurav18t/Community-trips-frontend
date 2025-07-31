@@ -10,6 +10,8 @@ import ChangePassword from './ChangePassword';
 import TripForm from './TripForm';
 import TripDetails from './components/TripDetails';
 import VerifyUser from './Verifyuser'; // ✅ NEW
+import InvitePage from './InvitePage'; // ✅ NEW import
+
 
 import Sidebar from './components/Sidebar';
 import TopNavbar from './components/topnavbar';
@@ -36,6 +38,9 @@ export default function App() {
 
         <Route path="/create-trip" element={<TripForm />} />
         <Route path="/tripvibe" element={<TripVibe />} />
+{/* Invite system routes */}
+        <Route path="/invite/:inviteId" element={<InvitePage />} /> {/* ✅ Invite modal route */}
+        <Route path="/p/trip/:tripId" element={<AppLayout><ItineraryPage /></AppLayout>} /> {/* ✅ redirect after accepting */}
 
         {/* Trip details */}
         <Route path="/trip/:tripId" element={<AppLayout><TripDetails /></AppLayout>} />

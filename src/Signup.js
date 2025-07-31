@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Auth.css";
 
+//const API_URL = "http://localhost:6969";
 const API_URL = "https://community-trips-backend.onrender.com";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = new URLSearchParams(location.search).get("redirectTo") || "/planner";
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,7 +48,10 @@ export default function Signup() {
 
       if (result.success) {
         toast.success("Signup successful! Check your email for OTP.");
-        setTimeout(() => navigate("/signin"), 1500);
+        // 🔁 Forward user to /signin *with redirectTo*
+        setTimeout(() => {
+          navigate(`/signin?redirectTo=${encodeURIComponent(redirectTo)}`);
+        }, 1500);
       } else {
         toast.error(`Signup failed: ${result.message || "Unknown error"}`);
       }
@@ -73,7 +80,9 @@ export default function Signup() {
 
       if (result.success) {
         toast.success("Google Sign-Up successful! Check your email.");
-        setTimeout(() => navigate("/signin"), 1500);
+        setTimeout(() => {
+          navigate(`/signin?redirectTo=${encodeURIComponent(redirectTo)}`);
+        }, 1500);
       } else {
         toast.error(`Google Signup failed: ${result.message || "Unknown error"}`);
       }
@@ -124,7 +133,8 @@ export default function Signup() {
       />
 
       <p className="bottom-text">
-        Already have an account? <a href="/signin">Sign in</a>
+        Already have an account?{" "}
+        <a href={`/signin?redirectTo=${encodeURIComponent(redirectTo)}`}>Sign in</a>
       </p>
     </div>
   );

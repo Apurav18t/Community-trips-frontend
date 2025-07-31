@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./TripForm.css";
+//const API_URL = "http://localhost:6969";
+
 const API_URL = "https://community-trips-backend.onrender.com";
 
 const TripForm = () => {
@@ -244,6 +246,7 @@ const TripForm = () => {
         </div>
 
         <div className="trip-form-group checkbox-group">
+          <label htmlFor="roadtrip">This is a road trip</label>
           <input
             type="checkbox"
             name="isRoadTrip"
@@ -251,7 +254,6 @@ const TripForm = () => {
             onChange={handleChange}
             id="roadtrip"
           />
-          <label htmlFor="roadtrip">This is a road trip</label>
         </div>
 
         <button

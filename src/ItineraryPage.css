@@ -1,68 +1,79 @@
 .itinerary-page {
   display: flex;
+  flex-direction: row;
   height: 100vh;
-  font-family: 'Poppins', sans-serif;
   overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+  background: #f0f2f5;
 }
 
 .left-panel {
-  flex: 1;
+  flex: 3; /* 60% */
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  overflow: hidden;
-  background: #f9f9f9;
+  padding: 24px;
+  overflow-y: auto;
+  background: #f7f9fc;
+  border-right: 1px solid #ddd;
 }
 
-.itinerary-scroll-content {
-  flex: 1;
+.right-panel {
+flex: 2; /* 40% */  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  background-color: #ffffff;
   overflow-y: auto;
-  padding-right: 10px;
+  border-left: 1px solid #ddd;
+}
+
+.itinerary-section {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
 }
 
 .chatbox {
-  background: #fff;
-  padding: 15px;
-  border-top: 1px solid #ddd;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  margin-top: auto;
+  background: #ffffff;
+  padding: 16px;
+  border-top: 1px solid #eee;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
 }
 
 .chatbox textarea {
   width: 100%;
-  padding: 10px;
-  border-radius: 8px;
   border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 5px;
   resize: none;
+  font-size: 14px;
 }
 
 .chatbox button {
-  margin-top: 10px;
+  margin-top: 12px;
+  padding: 10px 20px;
   background-color: #6A5ACD;
-  color: white;
-  padding: 8px 16px;
+  color: #fff;
   border: none;
   border-radius: 6px;
+  font-weight: bold;
   cursor: pointer;
+  width: 100%;
 }
-
-.right-panel {
-  width: 500px;
-  background: #fafafa;
-  padding: 20px;
-  border-left: 1px solid #eee;
-  overflow-y: auto;
-}
-
 .tab-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 5px;
   margin-bottom: 15px;
 }
 
 .tab-buttons button {
-  padding: 6px 12px;
+  padding: 6px 8px;
   border-radius: 6px;
+  font-size: 0.6rem;
   background: #2e7d32;
   color: white;
   border: none;
@@ -364,4 +375,32 @@ grid-template-columns: repeat(2, 1fr);
 .sight-card p {
   font-size: 13px;
   margin: 2px 0;
+}
+
+/* Target Markdown-rendered text */
+.itinerary-section,
+.tab-content {
+  font-size: 0.9rem; /* or try 0.85rem, 14px, etc. */
+  line-height: 1.5;
+}
+
+/* Optional: Style headers inside the markdown */
+.itinerary-section h1,
+.itinerary-section h2,
+.itinerary-section h3,
+.itinerary-section h4,
+.tab-content h1,
+.tab-content h2,
+.tab-content h3,
+.tab-content h4 {
+  font-size: 1rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Adjust list item text size */
+.itinerary-section li,
+.tab-content li {
+  font-size: 0.88rem;
+  margin-bottom: 0.3rem;
 }

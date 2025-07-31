@@ -10,7 +10,8 @@ import './ItineraryPage.css';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import default styles
 
-const API_URL = "https://community-trips-backend.onrender.com";
+//const API_URL = "https://community-trips-backend.onrender.com";
+const API_URL = "http://localhost:6969";
 
 
 export default function ItineraryPage() {
@@ -53,6 +54,7 @@ export default function ItineraryPage() {
 
   const access_token = localStorage.getItem('access_token');
   const authHeader = { headers: { Authorization: `Bearer ${access_token}` } };
+  
 
   const fetchTripTips = async () => {
       try {
@@ -138,12 +140,17 @@ export default function ItineraryPage() {
       setLoading(false);
     }
   };
+const handleInvite = async () => {
+  if (!inviteEmail || !inviteEmail.includes('@')) {
+    toast.warning("Please enter a valid email.");
+    return;
+  }
 
-  const handleInvite = async () => {
-    if (!inviteEmail || !inviteEmail.includes('@')) {
-      toast.warning("Please enter a valid email.");
-      return;
-    }
+  const alreadyInvited = travelers.some(t => t.inviteSendTo === inviteEmail);
+  if (alreadyInvited) {
+    toast.error("User is already in the trip.");
+    return;
+  }
     try {
       const res = await axios.post(`${API_URL}/trips/inviteUser`, { email: inviteEmail, tripId }, authHeader);
       if (res.data.success) {
@@ -320,7 +327,7 @@ const handleDeleteTrip = () => {
       <div className="left-panel">
         <div className="itinerary-scroll-content">
           <h3>
-            Hola <span style={{ color: '#6A5ACD' }}>{userName}</span> 👋,we are working on your trip: <span style={{ color: '#6A5ACD' }}>{tripName}</span>
+            Hola <span style={{ color: '#2e7d32' }}>{userName}</span> 👋,we are working on your trip: <span style={{ color: '#2e7d32' }}>{tripName}</span>
           </h3>
           <p style={{ color: '#777' }}>Plan a memorable experience with scenic routes and local culture.</p>
 
@@ -362,8 +369,9 @@ const handleDeleteTrip = () => {
             backgroundColor: 'crimson',
             color: 'white',
             marginTop: '1rem',
-            padding: '0.5rem 1rem',
+            padding: '0.5rem 0.5rem',
             border: 'none',
+            maxWidth: '150px',
             borderRadius: '5px'
           }}
         >
@@ -372,21 +380,35 @@ const handleDeleteTrip = () => {
         <div className="tab-content">
           {activeTab === 'final' && (loading ? <p>Loading itinerary...</p> : <ReactMarkdown>{finalItinerary}</ReactMarkdown>)}
 
-          {activeTab === 'travelers' && (
-            <div className="travelers-tab">
-              <h5>Travelers Who Have Joined:</h5>
-              <ul>
-                {travelers.filter(t => t.invitedAccepted === 'accepted').map((t, i) => (
-                  <li key={i}><strong>{t.inviteSendTo}</strong></li>
-                ))}
-              </ul>
-              {travelers.filter(t => t.invitedAccepted === 'pending').length > 0 && <p>Some invites are still pending...</p>}
-              <div className="invite-form" style={{ marginTop: "1rem" }}>
-                <input type="email" placeholder="Invite user by email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} />
-                <button onClick={handleInvite}>Invite</button>
-              </div>
-            </div>
-          )}
+{activeTab === 'travelers' && (
+  <div className="travelers-tab">
+    <h5>Travelers</h5>
+    {travelers.length === 0 ? <p>No travelers invited yet.</p> : (
+      <ul>
+        {
+  Array.from(new Map(travelers.map(t => [t.inviteSendTo, t])).values()).map((t, i) => (
+    <li key={i}>
+      <strong>{t.inviteSendTo}</strong> —{" "}
+      <span className={`badge ${t.inviteStatus?.toLowerCase() || 'pending'}`}>
+        {t.inviteStatus || "pending"}
+      </span>
+    </li>
+  ))
+}
+
+      </ul>
+    )}
+    <div style={{ marginTop: "1rem" }} className="invite-form">
+      <input
+        type="email"
+        placeholder="Invite user by email"
+        value={inviteEmail}
+        onChange={(e) => setInviteEmail(e.target.value)}
+      />
+      <button onClick={handleInvite}>Invite</button>
+    </div>
+  </div>
+)}
 
           {activeTab === 'sightseeing' && (
             <div className="sightseeing-tab">

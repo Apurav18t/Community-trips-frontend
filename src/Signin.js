@@ -1,25 +1,30 @@
 // Signin.js
 import React, { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Auth.css";
 
+//const API_URL = "http://localhost:6969";
 const API_URL = "https://community-trips-backend.onrender.com";
 
 export default function Signin() {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const redirectTo = new URLSearchParams(location.search).get("redirectTo") || "/planner";
+
   useEffect(() => {
     const user = localStorage.getItem("user");
-    if (user) navigate("/planner");
-  }, [navigate]);
+    if (user) navigate(redirectTo); // ✅ already logged in? go to redirectTo
+  }, [navigate, redirectTo]);
 
   const saveUserToLocalStorage = (data, access_token) => {
     const userData = {
@@ -47,9 +52,8 @@ export default function Signin() {
       if (result.success && result.data && result.data.access_token) {
         saveUserToLocalStorage(result.data, result.data.access_token);
         toast.success("Sign in successful!");
-        setTimeout(() => navigate("/planner"), 1000);
+        setTimeout(() => navigate(redirectTo), 1000); // ✅ redirect to invite/trip/planner
       } else {
-        // 🔁 Handle unverified user separately
         if (
           result.message ===
           "USER NOT VERIFIED. OTP SENT TO YOUR EMAIL PLEASE CHECK"
@@ -81,7 +85,7 @@ export default function Signin() {
       if (result.success && result.data && result.data.access_token) {
         saveUserToLocalStorage(result.data, result.data.access_token);
         toast.success("Google Sign-In successful!");
-        setTimeout(() => navigate("/planner"), 1000);
+        setTimeout(() => navigate(redirectTo), 1000); // ✅ go to invite/trip/planner
       } else {
         toast.error(`Google Sign-In failed: ${result.message || "Unknown error"}`);
       }

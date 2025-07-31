@@ -13,13 +13,13 @@
   border-radius: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 500px;
+  max-width: 440px;
 }
 
 .trip-form-card h2 {
   text-align: left;
   margin-bottom: 1.5rem;
-  font-size: 1.8rem;
+  font-size: 1rem;
   color: #222;
 }
 
@@ -98,8 +98,8 @@
 /* Travellers section */
 .trip-form-travellers {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
   justify-content: space-between;
 }
 
@@ -107,7 +107,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1 1 22%;
+  flex: 0 0 auto;   /* ✅ Allow natural size */
 }
 
 .traveller-counter span {
@@ -134,8 +134,8 @@
   color: white;
   border: none;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   font-size: 1.1rem;
   cursor: pointer;
   transition: background 0.3s ease;
@@ -154,10 +154,19 @@
 /* Road trip checkbox alignment */
 .trip-form-group.checkbox-group {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 0.6rem;
+  justify-content: flex-start;
+  gap: 5rem;
   margin-top: 1rem;
   font-weight: 500;
+  width: 100%; /* take full width of form */
+
+}
+
+.trip-form-group.checkbox-group label {
+  white-space: nowrap; /* ⛔️ prevent label from breaking into 2 lines */
+  flex: 1; /* let label take up space */
 }
 
 /* Submit button */
