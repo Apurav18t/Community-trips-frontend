@@ -10,8 +10,8 @@ import './ItineraryPage.css';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import default styles
 
-//const API_URL = "https://community-trips-backend.onrender.com";
-const API_URL = "http://localhost:6969";
+const API_URL = "https://community-trips-backend.onrender.com";
+//const API_URL = "http://localhost:6969";
 
 
 export default function ItineraryPage() {
