@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-//const API_URL = "http://localhost:6969";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
+//const API_URL = "http://localhost:6969";
 const API_URL = "https://community-trips-backend.onrender.com";
 
 export default function TripVibe() {
@@ -18,7 +20,7 @@ export default function TripVibe() {
       console.log("🗂 Loaded from localStorage:", { tripData, recsData });
 
       if (!tripData || tripData === "undefined" || (!tripData._id && !tripData.id)) {
-        alert("No trip found. Please plan your trip first.");
+        toast.warning("No trip found. Please plan your trip first.");
         navigate("/plan-trip");
         return;
       }
@@ -33,9 +35,9 @@ export default function TripVibe() {
       }
     } catch (err) {
       console.error("❌ Error parsing localStorage JSON:", err);
-      alert("Something went wrong loading your trip. Please try again.");
+      toast.error("Something went wrong loading your trip. Please try again.");
     }
-  }, []);
+  }, [navigate]);
 
   const togglePlace = (location, place) => {
     setSelectedVibes(prev => {
@@ -56,13 +58,13 @@ export default function TripVibe() {
     const access_token = localStorage.getItem("access_token");
 
     if (!tripId) {
-      alert("Trip details missing. Please plan your trip again.");
+      toast.warning("Trip details missing. Please plan your trip again.");
       navigate("/plan-trip");
       return;
     }
 
     if (!access_token) {
-      alert("Authentication token missing. Please login again.");
+      toast.error("Authentication token missing. Please login again.");
       navigate("/login");
       return;
     }
@@ -85,7 +87,7 @@ export default function TripVibe() {
       if (!response.ok) {
         const text = await response.text();
         console.error(`❌ Server responded with ${response.status}:`, text);
-        alert("Failed to generate itinerary. Please try again.");
+        toast.error("Failed to generate itinerary. Please try again.");
         return;
       }
 
@@ -95,11 +97,11 @@ export default function TripVibe() {
       if (data.success) {
         navigate(`/trip/itinerary/${tripId}`);
       } else {
-        alert("Failed to generate itinerary. Server error.");
+        toast.error("Failed to generate itinerary. Server error.");
       }
     } catch (err) {
       console.error("❌ Error creating itinerary:", err);
-      alert("Something went wrong while creating the itinerary.");
+      toast.error("Something went wrong while creating the itinerary.");
     } finally {
       setLoading(false); // ✅ stop loading
     }
@@ -110,6 +112,8 @@ export default function TripVibe() {
       maxWidth: "800px", margin: "30px auto", padding: "20px",
       background: "#f9fafb", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
     }}>
+      <ToastContainer position="top-center" autoClose={3000} />
+      
       <h2 style={{ marginBottom: "20px", fontSize: "24px", textAlign: "center" }}>
         What's your trip vibe for {trip?.tripName || "your trip"}?
       </h2>

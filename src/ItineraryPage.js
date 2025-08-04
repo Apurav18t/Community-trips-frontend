@@ -40,6 +40,10 @@ export default function ItineraryPage() {
   const [tipsContent, setTipsContent] = useState('');
   const [tipsLoading, setTipsLoading] = useState(false);
 
+   // ✨ Greeting Support
+  const greetings = ['Hola', 'Namaste', 'Bonjour', 'Ciao', 'Hello', 'Sat Sri Akal', 'Salam', 'Hej', 'Hallo', 'Konnichiwa', 'Ni Hao'];
+  const [greetingWord, setGreetingWord] = useState('Namaste');
+
   const formatTipsAsBullets = (tips) => {
   if (!tips) return '';
   // Split by newline or full stop and filter empty lines
@@ -79,6 +83,10 @@ export default function ItineraryPage() {
       navigate("/plan-trip");
       return;
     }
+
+     // 👋 Set random greeting
+    const randomGreet = greetings[Math.floor(Math.random() * greetings.length)];
+    setGreetingWord(randomGreet);
 
     const fetchTripDetails = async () => {
       try {
@@ -327,8 +335,8 @@ const handleDeleteTrip = () => {
       <div className="left-panel">
         <div className="itinerary-scroll-content">
           <h3>
-            Hola <span style={{ color: '#2e7d32' }}>{userName}</span> 👋,we are working on your trip: <span style={{ color: '#2e7d32' }}>{tripName}</span>
-          </h3>
+ {greetingWord} <span style={{ color: '#2e7d32' }}>{userName}</span> 👋,
+            we are working on your trip: <span style={{ color: '#2e7d32' }}>{tripName}</span>          </h3>
           <p style={{ color: '#777' }}>Plan a memorable experience with scenic routes and local culture.</p>
 
           <div className="itinerary-section">

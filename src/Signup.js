@@ -12,18 +12,24 @@ const API_URL = "https://community-trips-backend.onrender.com";
 export default function Signup() {
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = new URLSearchParams(location.search).get("redirectTo") || "/planner";
+  const redirectTo =
+    new URLSearchParams(location.search).get("redirectTo") || "/dashboard";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) navigate("/planner");
-  }, [navigate]);
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const token = localStorage.getItem("access_token");
+      if (user && token) navigate(redirectTo);
+    } catch (err) {
+      console.warn("Invalid user in localStorage:", err);
+    }
+  }, [navigate, redirectTo]);
 
-  // 🔹 Regular Form Sign Up
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -33,6 +39,7 @@ export default function Signup() {
     }
 
     try {
+      setLoading(true);
       const response = await fetch(`${API_URL}/user/registerUser`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -48,9 +55,8 @@ export default function Signup() {
 
       if (result.success) {
         toast.success("Signup successful! Check your email for OTP.");
-        // 🔁 Forward user to /signin *with redirectTo*
         setTimeout(() => {
-          navigate(`/signin?redirectTo=${encodeURIComponent(redirectTo)}`);
+          navigate(`/verifyUser?email=${encodeURIComponent(email)}`);
         }, 1500);
       } else {
         toast.error(`Signup failed: ${result.message || "Unknown error"}`);
@@ -58,12 +64,14 @@ export default function Signup() {
     } catch (err) {
       console.error("Signup error:", err);
       toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 🔹 Google Sign Up
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
+      setLoading(true);
       const decoded = jwtDecode(credentialResponse.credential);
 
       const response = await fetch(`${API_URL}/user/google-register`, {
@@ -81,7 +89,7 @@ export default function Signup() {
       if (result.success) {
         toast.success("Google Sign-Up successful! Check your email.");
         setTimeout(() => {
-          navigate(`/signin?redirectTo=${encodeURIComponent(redirectTo)}`);
+          navigate(`/verifyUser?email=${encodeURIComponent(decoded.email)}`);
         }, 1500);
       } else {
         toast.error(`Google Signup failed: ${result.message || "Unknown error"}`);
@@ -89,6 +97,8 @@ export default function Signup() {
     } catch (err) {
       console.error("Google Signup Error:", err);
       toast.error("Google Sign-Up failed. Try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,6 +115,7 @@ export default function Signup() {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
+          disabled={loading}
         />
         <input
           type="email"
@@ -112,6 +123,7 @@ export default function Signup() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={loading}
         />
         <input
           type="password"
@@ -119,8 +131,15 @@ export default function Signup() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={loading}
         />
-        <button type="submit">Sign up</button>
+        <button type="submit" disabled={loading}>
+          {loading ? (
+            <span className="spinner"></span>
+          ) : (
+            "Sign up"
+          )}
+        </button>
       </form>
 
       <div className="or-divider">OR</div>

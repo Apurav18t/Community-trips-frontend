@@ -34,7 +34,8 @@ flex: 2; /* 40% */  display: flex;
   margin-bottom: 20px;
 }
 
-.chatbox {
+.chatbox { 
+  position: relative;
   margin-top: auto;
   background: #ffffff;
   padding: 16px;
@@ -66,7 +67,7 @@ flex: 2; /* 40% */  display: flex;
 .tab-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 4px;
   margin-bottom: 15px;
 }
 

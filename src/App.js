@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // ✅ Import toast styles
+import 'react-toastify/dist/ReactToastify.css';
 
 import Signup from './Signup';
 import Signin from './Signin';
@@ -9,9 +9,8 @@ import ForgotPassword from './ForgotPassword';
 import ChangePassword from './ChangePassword';
 import TripForm from './TripForm';
 import TripDetails from './components/TripDetails';
-import VerifyUser from './Verifyuser'; // ✅ NEW
-import InvitePage from './InvitePage'; // ✅ NEW import
-
+import VerifyUser from './Verifyuser';
+import InvitePage from './InvitePage';
 
 import Sidebar from './components/Sidebar';
 import TopNavbar from './components/topnavbar';
@@ -22,7 +21,9 @@ import ProfileSettings from './ProfileSettings';
 import TripsPage from './components/TripsPage';
 import Home from './home';
 import TripVibe from './TripVibe';
-import ItineraryPage from './ItineraryPage'; // ⭐ itinerary page
+import ItineraryPage from './ItineraryPage';
+
+import ProtectedRoute from './components/Protectedroutes'; // ✅ Add your ProtectedRoute
 
 export default function App() {
   return (
@@ -34,42 +35,122 @@ export default function App() {
         <Route path="/signin" element={<Signin />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/change-password" element={<ChangePassword />} />
-       <Route path="/verifyUser" element={<VerifyUser />} /> {/* ✅ New OTP verify route */}
+        <Route path="/verifyUser" element={<VerifyUser />} />
 
-        <Route path="/create-trip" element={<TripForm />} />
-        <Route path="/tripvibe" element={<TripVibe />} />
-{/* Invite system routes */}
-        <Route path="/invite/:inviteId" element={<InvitePage />} /> {/* ✅ Invite modal route */}
-        <Route path="/p/trip/:tripId" element={<AppLayout><ItineraryPage /></AppLayout>} /> {/* ✅ redirect after accepting */}
-
-        {/* Trip details */}
+        {/* Public/Invite based pages */}
+        <Route path="/invite/:inviteId" element={<InvitePage />} />
+        <Route path="/p/trip/:tripId" element={<AppLayout><ItineraryPage /></AppLayout>} />
         <Route path="/trip/:tripId" element={<AppLayout><TripDetails /></AppLayout>} />
+        <Route path="/tripvibe" element={<TripVibe />} />
 
-        {/* Profile settings */}
-        <Route path="/account-settings" element={<AppLayout><ProfileSettings /></AppLayout>} />
+        {/* Protected Routes */}
+        <Route
+          path="/create-trip"
+          element={
+            <ProtectedRoute>
+              <AppLayout><TripForm /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
 
-        {/* ⭐ Itinerary Page with dynamic tripId */}
-        <Route path="/trip/itinerary/:tripId" element={<AppLayout><ItineraryPage /></AppLayout>} />
+        <Route
+          path="/account-settings"
+          element={
+            <ProtectedRoute>
+              <AppLayout><ProfileSettings /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
 
-        {/* ✅ ALSO support email invite link pattern */}
-        <Route path="/trips/:tripId" element={<AppLayout><ItineraryPage /></AppLayout>} />
+        <Route
+          path="/trip/itinerary/:tripId"
+          element={
+            <ProtectedRoute>
+              <AppLayout><ItineraryPage /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Main dashboard & app pages */}
-        <Route path="/dashboard" element={<AppLayout><MainDashboard /></AppLayout>} />
-        <Route path="/explore" element={<AppLayout><ExplorePage /></AppLayout>} />
-        <Route path="/notifications" element={<AppLayout><NotificationsPage /></AppLayout>} />
+        <Route
+          path="/trips/:tripId"
+          element={
+            <ProtectedRoute>
+              <AppLayout><ItineraryPage /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Trips pages */}
-        <Route path="/trips/current" element={<AppLayout><TripsPage type="current" /></AppLayout>} />
-        <Route path="/trips/upcoming" element={<AppLayout><TripsPage type="upcoming" /></AppLayout>} />
-        <Route path="/trips/past" element={<AppLayout><TripsPage type="past" /></AppLayout>} />
-        <Route path="/trips/all" element={<AppLayout><TripsPage type="all" /></AppLayout>} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <AppLayout><MainDashboard /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Fallback: show main dashboard */}
-        <Route path="*" element={<AppLayout><MainDashboard /></AppLayout>} />
+        <Route
+          path="/explore"
+          element={
+            <ProtectedRoute>
+              <AppLayout><ExplorePage /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <AppLayout><NotificationsPage /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/trips/current"
+          element={
+            <ProtectedRoute>
+              <AppLayout><TripsPage type="current" /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/trips/upcoming"
+          element={
+            <ProtectedRoute>
+              <AppLayout><TripsPage type="upcoming" /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/trips/past"
+          element={
+            <ProtectedRoute>
+              <AppLayout><TripsPage type="past" /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/trips/all"
+          element={
+            <ProtectedRoute>
+              <AppLayout><TripsPage type="all" /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Fallback to dashboard */}
+        <Route
+          path="*"
+          element={
+            <ProtectedRoute>
+              <AppLayout><MainDashboard /></AppLayout>
+            </ProtectedRoute>
+          }
+        />
       </Routes>
 
-      {/* ✅ Global toast container */}
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -85,7 +166,7 @@ export default function App() {
   );
 }
 
-// Layout for sidebar + top navbar
+// App layout with sidebar and top navbar
 function AppLayout({ children }) {
   return (
     <div style={{ display: 'flex', height: '100vh' }}>

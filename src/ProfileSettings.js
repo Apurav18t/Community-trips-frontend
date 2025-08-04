@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-const API_URL = "https://community-trips-backend.onrender.com";
-//const API_URL = "http://localhost:6969";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
+//const API_URL = "http://localhost:6969";
+const API_URL = "https://community-trips-backend.onrender.com";
 
 export default function ProfileSettings() {
   const navigate = useNavigate();
@@ -21,14 +23,14 @@ export default function ProfileSettings() {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser || storedUser === "undefined") {
-      alert("No user logged in.");
+      toast.error("No user logged in.");
       navigate("/signin");
       return;
     }
 
     try {
       const parsedUser = JSON.parse(storedUser);
-      const userId = parsedUser.id;
+      const userId = parsedUser._id; // ✅ FIXED
       const token = parsedUser.access_token;
 
       fetch(`${API_URL}/user/details/${userId}`, {
@@ -59,7 +61,7 @@ export default function ProfileSettings() {
               ...user
             }));
           } else {
-            alert("Failed to load profile.");
+            toast.error("Failed to load profile.");
           }
         });
 
@@ -76,17 +78,17 @@ export default function ProfileSettings() {
   const handleSave = async () => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
-      alert("Please login first.");
+      toast.error("Please login first.");
       navigate("/signin");
       return;
     }
 
     const user = JSON.parse(storedUser);
-    const userId = user.id;
+    const userId = user._id; // ✅ FIXED
     const token = user.access_token;
 
     if (!userId) {
-      alert("User ID missing. Please log in again.");
+      toast.error("User ID missing. Please log in again.");
       navigate("/signin");
       return;
     }
@@ -115,13 +117,13 @@ export default function ProfileSettings() {
           ...formData
         };
         localStorage.setItem("user", JSON.stringify(updatedUser));
-        alert("Profile updated successfully!");
+        toast.success("Profile updated successfully!");
       } else {
-        alert(`Update failed: ${result.message}`);
+        toast.error(`Update failed: ${result.message}`);
       }
     } catch (err) {
       console.error("Profile update error:", err);
-      alert("Something went wrong while updating your profile.");
+      toast.error("Something went wrong while updating your profile.");
     }
   };
 
@@ -130,7 +132,8 @@ export default function ProfileSettings() {
     navigate("/");
   };
 
-  return (
+  return (<>
+    <ToastContainer position="top-right" autoClose={3000} />
     <div style={{ display: 'flex', height: '100vh', background: '#fff' }}>
       <div style={{ flex: 1, padding: '50px', maxWidth: '800px' }}>
         <h2 style={{ marginBottom: '25px', fontSize: '24px' }}>Edit Profile</h2>
@@ -166,7 +169,7 @@ export default function ProfileSettings() {
         <button onClick={handleLogout} style={logoutBtnStyle}>Log Out</button>
       </div>
     </div>
-  );
+  </>);
 }
 
 const Input = ({ label, name, value, onChange }) => (
