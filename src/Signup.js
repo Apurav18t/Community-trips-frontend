@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import jwtDecode from "jwt-decode"; // fixed import (remove curly braces)
+import { jwtDecode } from "jwt-decode"; // fixed import (remove curly braces)
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Auth.css";
