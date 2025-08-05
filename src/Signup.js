@@ -5,9 +5,10 @@ import { jwtDecode } from "jwt-decode";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Auth.css";
+const API_URL = "http://localhost:6969";
 
-//const API_URL = "http://localhost:6969";
-const API_URL = "https://community-trips-backend.onrender.com";
+// Backend API URL
+//const API_URL = "https://community-trips-backend.onrender.com";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -86,11 +87,12 @@ export default function Signup() {
 
       const result = await response.json();
 
-      if (result.success) {
-        toast.success("Google Sign-Up successful! Check your email.");
-        setTimeout(() => {
-          navigate(`/verifyUser?email=${encodeURIComponent(decoded.email)}`);
-        }, 1500);
+      if (result.success && result.data && result.data.access_token) {
+        // Store user and token in localStorage
+        localStorage.setItem("user", JSON.stringify(result.data));
+        localStorage.setItem("access_token", result.data.access_token);
+        toast.success("Google Sign-Up successful!");
+        setTimeout(() => navigate(redirectTo), 1000);
       } else {
         toast.error(`Google Signup failed: ${result.message || "Unknown error"}`);
       }
@@ -134,11 +136,7 @@ export default function Signup() {
           disabled={loading}
         />
         <button type="submit" disabled={loading}>
-          {loading ? (
-            <span className="spinner"></span>
-          ) : (
-            "Sign up"
-          )}
+          {loading ? <span className="spinner"></span> : "Sign up"}
         </button>
       </form>
 
