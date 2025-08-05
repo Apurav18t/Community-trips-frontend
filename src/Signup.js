@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
+import jwtDecode from "jwt-decode"; // fixed import (remove curly braces)
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Auth.css";
-const API_URL = "http://localhost:6969";
 
 // Backend API URL
-//const API_URL = "https://community-trips-backend.onrender.com";
+const API_URL = "https://community-trips-backend.onrender.com";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -20,6 +19,21 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Utility function to save user info and token in localStorage
+  const saveUserToLocalStorage = (data, access_token) => {
+    const userData = {
+      _id: data._id || data.id,
+      fullName: data.fullName || data.name || "Guest",
+      email: data.email,
+      isVerified: data.isVerified || "N", // store verification status
+      access_token,
+    };
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("access_token", access_token);
+    localStorage.setItem("userId", userData._id);
+    return userData;
+  };
 
   useEffect(() => {
     try {
@@ -88,9 +102,7 @@ export default function Signup() {
       const result = await response.json();
 
       if (result.success && result.data && result.data.access_token) {
-        // Store user and token in localStorage
-        localStorage.setItem("user", JSON.stringify(result.data));
-        localStorage.setItem("access_token", result.data.access_token);
+        saveUserToLocalStorage(result.data, result.data.access_token);
         toast.success("Google Sign-Up successful!");
         setTimeout(() => navigate(redirectTo), 1000);
       } else {
@@ -151,7 +163,9 @@ export default function Signup() {
 
       <p className="bottom-text">
         Already have an account?{" "}
-        <a href={`/signin?redirectTo=${encodeURIComponent(redirectTo)}`}>Sign in</a>
+        <a href={`/signin?redirectTo=${encodeURIComponent(redirectTo)}`}>
+          Sign in
+        </a>
       </p>
     </div>
   );
