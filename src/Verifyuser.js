@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-//const API_URL = "http://localhost:6969";
+
+// const API_URL = "http://localhost:6969";
 const API_URL = "https://community-trips-backend.onrender.com";
 
 export default function VerifyUser() {
@@ -13,6 +14,19 @@ export default function VerifyUser() {
 
   const [email, setEmail] = useState(emailFromQuery || "");
   const [otp, setOtp] = useState("");
+
+  // ✅ Redirect verified users
+  useEffect(() => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user?.isVerified === "Y") {
+        toast.info("You are already verified!");
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      console.warn("Invalid user in localStorage:", err);
+    }
+  }, [navigate]);
 
   const handleVerify = async (e) => {
     e.preventDefault();
@@ -67,3 +81,4 @@ export default function VerifyUser() {
     </div>
   );
 }
+
