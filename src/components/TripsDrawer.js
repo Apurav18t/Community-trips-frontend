@@ -1,17 +1,40 @@
-// TripsDrawer.js
-import React from 'react';
+import React, { useState } from 'react';
 import TripsPage from './TripsPage';
 
-export default function TripsDrawer({ type, onClose }) {
+export default function TripsDrawer({ onClose }) {
+  const [activeTab, setActiveTab] = useState('upcoming');
+
+  const tabs = ['upcoming', 'current', 'past', 'all'];
+
+  const formatLabel = (label) =>
+    label.charAt(0).toUpperCase() + label.slice(1);
+
   return (
     <div style={styles.overlay}>
       <div style={styles.drawer}>
         <div style={styles.header}>
-          <span>{type.charAt(0).toUpperCase() + type.slice(1)} Trips</span>
+          <span>My Trips</span>
           <button onClick={onClose} style={styles.closeBtn}>×</button>
         </div>
-        <div style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
-          <TripsPage type={type} />
+
+        <div style={styles.tabs}>
+          {tabs.map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                ...styles.tabButton,
+                borderBottom: activeTab === tab ? '2px solid #000' : 'none',
+                fontWeight: activeTab === tab ? 'bold' : 'normal',
+              }}
+            >
+              {formatLabel(tab)}
+            </button>
+          ))}
+        </div>
+
+        <div style={styles.content}>
+          <TripsPage type={activeTab} />
         </div>
       </div>
     </div>
@@ -48,5 +71,23 @@ const styles = {
     border: 'none',
     background: 'transparent',
     cursor: 'pointer'
+  },
+  tabs: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    borderBottom: '1px solid #ddd'
+  },
+  tabButton: {
+    flex: 1,
+    padding: '10px',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '1rem'
+  },
+  content: {
+    flex: 1,
+    overflowY: 'auto',
+    padding: '16px'
   }
 };

@@ -10,8 +10,8 @@ import './ItineraryPage.css';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import default styles
 
-const API_URL = "https://community-trips-backend.onrender.com";
-//const API_URL = "http://localhost:6969";
+//const API_URL = "https://community-trips-backend.onrender.com";
+const API_URL = "http://localhost:6969";
 
 
 export default function ItineraryPage() {
@@ -40,9 +40,25 @@ export default function ItineraryPage() {
   const [tipsContent, setTipsContent] = useState('');
   const [tipsLoading, setTipsLoading] = useState(false);
 
+  const [chatHistory, setChatHistory] = useState([]); // ⬅️ To hold full conversation
+
+
+   const [weatherData, setWeatherData] = useState(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+
    // ✨ Greeting Support
   const greetings = ['Hola', 'Namaste', 'Bonjour', 'Ciao', 'Hello', 'Sat Sri Akal', 'Salam', 'Hej', 'Hallo', 'Konnichiwa', 'Ni Hao'];
   const [greetingWord, setGreetingWord] = useState('Namaste');
+
+  useEffect(() => {
+  const interval = setInterval(() => {
+    const randomGreet = greetings[Math.floor(Math.random() * greetings.length)];
+    setGreetingWord(randomGreet);
+  }, 10000); // Change greeting every 15 seconds
+
+  return () => clearInterval(interval); // Cleanup
+}, []);
+
 
   const formatTipsAsBullets = (tips) => {
   if (!tips) return '';
@@ -59,6 +75,32 @@ export default function ItineraryPage() {
   const access_token = localStorage.getItem('access_token');
   const authHeader = { headers: { Authorization: `Bearer ${access_token}` } };
   
+ const fetchWeatherData = async (cityName, startDate, endDate) => {
+  if (!cityName || !startDate || !endDate) return;
+
+  try {
+    setWeatherLoading(true);
+    const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+
+    // Calculate trip length
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const tripLength = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+    const res = await axios.get(
+      `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=${tripLength}`
+    );
+
+    setWeatherData(res.data);
+  } catch (error) {
+    console.error("Failed to fetch weather data:", error);
+    toast.error("Weather information could not be loaded.");
+  } finally {
+    setWeatherLoading(false);
+  }
+};
+
+
 
   const fetchTripTips = async () => {
       try {
@@ -85,10 +127,11 @@ export default function ItineraryPage() {
     }
 
      // 👋 Set random greeting
-    const randomGreet = greetings[Math.floor(Math.random() * greetings.length)];
-    setGreetingWord(randomGreet);
+   
 
-    const fetchTripDetails = async () => {
+    
+
+   const fetchTripDetails = async () => {
       try {
         setLoading(true);
         const tripRes = await axios.get(`${API_URL}/trips/detail?id=${tripId}`, authHeader);
@@ -108,14 +151,17 @@ export default function ItineraryPage() {
         setStartDate(tripData.startDate);
         setEndDate(tripData.endDate);
         setUserName(tripData.userName);
-      } catch (err) {
+
+        // ✅ Call weather fetch here
+fetchWeatherData(tripData.tripName || "Delhi", tripData.startDate, tripData.endDate);
+       } catch (err) {
         console.error("Error fetching itinerary:", err);
         toast.error("Could not load itinerary.");
       } finally {
         setLoading(false);
       }
     };
-
+    
     const fetchTravelers = async () => {
       try {
         const res = await axios.get(`${API_URL}/trips/invites?tripId=${tripId}`, authHeader);
@@ -134,20 +180,36 @@ export default function ItineraryPage() {
   }, [tripId, navigate]);
 
   const handleReGenerate = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.post(`${API_URL}/itinerary/re-generate`, { tripId, prompt: userPrompt }, authHeader);
-      setFinalItinerary(res.data.data);
-      setUserPrompt('');
-      await axios.put(`${API_URL}/itinerary/save`, { tripId, itineraryData: res.data.data }, authHeader);
-      toast.success("Itinerary updated!");
-    } catch (err) {
-      console.error("Error regenerating itinerary:", err);
-      toast.error("Failed to regenerate itinerary.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!userPrompt.trim()) return;
+  try {
+    setLoading(true);
+
+    const res = await axios.post(`${API_URL}/itinerary/re-generate`, { tripId, prompt: userPrompt }, authHeader);
+    const newAIResponse = res.data.data;
+
+    // Set the final itinerary as the latest response
+    setFinalItinerary(newAIResponse);
+
+    // Update chat history
+    setChatHistory(prev => [
+      ...prev,
+      { isUser: true, message: userPrompt },
+      { isUser: false, message: newAIResponse }
+    ]);
+
+    // Save to backend
+    await axios.put(`${API_URL}/itinerary/save`, { tripId, itineraryData: newAIResponse }, authHeader);
+
+    setUserPrompt('');
+    toast.success("Itinerary updated!");
+  } catch (err) {
+    console.error("Error regenerating itinerary:", err);
+    toast.error("Failed to regenerate itinerary.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 const handleInvite = async () => {
   if (!inviteEmail || !inviteEmail.includes('@')) {
     toast.warning("Please enter a valid email.");
@@ -341,7 +403,21 @@ const handleDeleteTrip = () => {
 
           <div className="itinerary-section">
             <h4>Initial Itinerary</h4>
-            {loading ? <p>Loading itinerary...</p> : <ReactMarkdown>{initialItinerary}</ReactMarkdown>}
+            {loading ? (
+  <p>Loading itinerary...</p>
+) : chatHistory.length > 0 ? (
+  chatHistory.map((entry, idx) => (
+    <div
+      key={idx}
+      className={entry.isUser ? 'chat-bubble user' : 'chat-bubble ai'}
+    >
+      <ReactMarkdown>{entry.message}</ReactMarkdown>
+    </div>
+  ))
+) : (
+  <ReactMarkdown>{initialItinerary}</ReactMarkdown>
+)}
+
           </div>
         </div>
 
@@ -363,6 +439,34 @@ const handleDeleteTrip = () => {
           {startDate && endDate ? `${formatDate(startDate)} - ${formatDate(endDate)}` : ''}
         </p>
 
+{/* Weather Section */}
+        <div className="weather-section" style={{ marginBottom: '1rem' }}>
+     {weatherLoading ? (
+  <p>Loading weather...</p>
+) : weatherData ? (
+  <div className="weather-info" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+    <img
+      src={weatherData.current.condition.icon}
+      alt={weatherData.current.condition.text}
+      title={weatherData.current.condition.text}
+      style={{ width: '50px', height: '50px' }}
+    />
+    <div>
+      <strong>{weatherData.location.name}</strong>
+      <p style={{ margin: 0 }}>
+        {Math.round(weatherData.current.temp_c)}°C, {weatherData.current.condition.text}
+      </p>
+      <small style={{ color: '#555' }}>
+        Humidity: {weatherData.current.humidity}%, Wind: {Math.round(weatherData.current.wind_kph)} km/h
+      </small>
+    </div>
+  </div>
+) : (
+  <p>No weather data available.</p>
+)}
+
+
+        </div>
         <div className="tab-buttons">
           <button className={activeTab === 'final' ? 'active-tab' : ''} onClick={() => setActiveTab('final')}>Final Itinerary</button>
           <button className={activeTab === 'travelers' ? 'active-tab' : ''} onClick={() => setActiveTab('travelers')}>Travelers</button>

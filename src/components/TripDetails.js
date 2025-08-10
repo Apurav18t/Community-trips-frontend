@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-const API_URL = "https://community-trips-backend.onrender.com";
-//const API_URL = "http://localhost:6969";
+//const API_URL = "https://community-trips-backend.onrender.com";
+const API_URL = "http://localhost:6969";
 
 export default function TripDetails() {
   const { id } = useParams();
