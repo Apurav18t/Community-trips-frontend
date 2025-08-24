@@ -10,8 +10,8 @@ import './ItineraryPage.css';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import default styles
 
-//const API_URL = "https://community-trips-backend.onrender.com";
-const API_URL = "http://localhost:6969";
+const API_URL = "https://community-trips-backend.onrender.com";
+//const API_URL = "http://localhost:6969";
 
 
 export default function ItineraryPage() {
@@ -189,7 +189,14 @@ if (initialItineraryEntry?.itineraryData) {
       );
 
       if (!alreadyExists) {
-        const genRes = await axios.post(`${API_URL}/itinerary/generate`, { tripId }, authHeader);
+  const storedTrip = JSON.parse(localStorage.getItem("trip"));
+  const tripType = storedTrip?.tripType || "Honeymoon Trip";
+
+  const genRes = await axios.post(`${API_URL}/itinerary/generate`, {
+    tripId,
+    tripType
+  }, authHeader);
+
         const generatedItinerary = genRes.data.data;
 
         setInitialItinerary(generatedItinerary);
@@ -246,29 +253,40 @@ fetchWeatherData(tripData.tripName || "Delhi", tripData.startDate, tripData.endD
     window.scrollTo(0, 0);
   }, [tripId, navigate]);
 
-  const handleReGenerate = async () => {
-  if (!userPrompt.trim()) return;
+const handleReGenerate = async () => {
+  if (!userPrompt.trim() || !finalItinerary) {
+    toast.error("Prompt or existing itinerary missing.");
+    return;
+  }
+
   try {
     setLoading(true);
 
-    const res = await axios.post(`${API_URL}/itinerary/re-generate`, { tripId, prompt: userPrompt, userId  }, authHeader);
+    const res = await axios.post(`${API_URL}/itinerary/re-generate`, {
+      tripId,
+      prompt: userPrompt,
+      userId,
+       itineraryMarkdown: finalItinerary
+    }, authHeader);
+
     const newAIResponse = res.data.data;
 
-    // Set the final itinerary as the latest response
     setFinalItinerary(newAIResponse);
 
-    // Update chat history
     setChatHistory(prev => [
       ...prev,
       { isUser: true, message: userPrompt },
       { isUser: false, message: newAIResponse }
     ]);
 
-    // Save to backend
-    await axios.post(`${API_URL}/itinerary/save`, { tripId, itineraryData: newAIResponse, promptUsed: userPrompt, userId }, authHeader);
+    await axios.post(`${API_URL}/itinerary/save`, {
+      tripId,
+      itineraryData: newAIResponse,
+      promptUsed: userPrompt,
+      userId
+    }, authHeader);
 
     setUserPrompt('');
-    console.log("USERID:", userId, "PROPMPT:", userPrompt)
     toast.success("Itinerary updated!");
   } catch (err) {
     console.error("Error regenerating itinerary:", err);
@@ -277,6 +295,7 @@ fetchWeatherData(tripData.tripName || "Delhi", tripData.startDate, tripData.endD
     setLoading(false);
   }
 };
+
 
 const handleInvite = async () => {
   if (!inviteEmail || !inviteEmail.includes('@')) {
@@ -579,7 +598,9 @@ const autoFetchStays = async (city) => {
             placeholder="Share your trip requirements, changes, or preferences..."
             rows="3"
           />
-          <button onClick={handleReGenerate}>Submit</button>
+<button onClick={handleReGenerate} disabled={loading}>
+  {loading ? <span className="loader"></span> : 'Submit'}
+</button>
         </div>
       </div>
 

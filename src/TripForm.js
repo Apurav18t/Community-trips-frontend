@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./TripForm.css";
-const API_URL = "http://localhost:6969";
+//const API_URL = "http://localhost:6969";
 
-//const API_URL = "https://community-trips-backend.onrender.com";
+const API_URL = "https://community-trips-backend.onrender.com";
 
 const TripForm = () => {
   const [form, setForm] = useState({
@@ -19,6 +19,7 @@ const TripForm = () => {
     infants: 0,
     pets: 0,
   });
+const [tripName, setTripName] = useState('');
 
   const [loading, setLoading] = useState(false); // ⏳ Add loading state
   const navigate = useNavigate();
@@ -68,7 +69,8 @@ const TripForm = () => {
     }
 
     const payload = {
-      tripName: `${form.startLocation} to ${form.destinations.filter(Boolean).join(", ")}`,
+      tripName: `${form.startLocation} to ${form.destinations.filter(Boolean).join(", ")}`,  customTripName: tripName.trim() || undefined, // ✅ Add this to backend only if user enters name
+
       tripDescription: form.tripDescription.trim() || "Trip planned.",
       startDate: form.startDate,
       endDate: form.endDate,
@@ -134,6 +136,15 @@ const TripForm = () => {
     <div className="trip-form-container">
       <form className="trip-form-card" onSubmit={handleSubmit}>
         <h2>Plan a Trip</h2>
+<div className="trip-form-group">
+  <label>Trip Name (Optional)</label>
+  <input
+    type="text"
+    value={tripName}
+    onChange={(e) => setTripName(e.target.value)}
+    placeholder="e.g. Goa Honeymoon, Family Vacation, Solo Escape"
+  />
+</div>
 
         <div className="trip-form-group">
           <label>Travelling From</label>

@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './TripsPage.css';
-//const API_URL = "https://community-trips-backend.onrender.com";
-const API_URL = "http://localhost:6969";
+const API_URL = "https://community-trips-backend.onrender.com";
+//const API_URL = "http://localhost:6969";
 
 
 export default function TripsPage({ type = 'all' }) {
@@ -28,8 +28,8 @@ export default function TripsPage({ type = 'all' }) {
 
         let url =
           type === 'current' || type === 'upcoming' || type === 'past'
-            ? `${API_URL}/trips/getFilterTrips?addedBy=${userId}&type=${type}`
-            : `${API_URL}/trips/list?addedBy=${userId}`;
+            ? `${API_URL}/trips/getFilterTrips?addedBy=${userId}&type=${type}&limit=1000`
+            : `${API_URL}/trips/list?addedBy=${userId}&limit=1000`;
 
         const response = await fetch(url, {
           method: 'GET',

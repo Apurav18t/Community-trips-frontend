@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import "./Auth.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-//const API_URL = "https://community-trips-backend.onrender.com";
-const API_URL = "http://localhost:6969";
+const API_URL = "https://community-trips-backend.onrender.com";
+//const API_URL = "http://localhost:6969";
 
 
 export default function ForgotPassword() {

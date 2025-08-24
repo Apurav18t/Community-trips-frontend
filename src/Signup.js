@@ -5,10 +5,10 @@ import { jwtDecode } from "jwt-decode";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Auth.css";
-const API_URL = "http://localhost:6969";
+//const API_URL = "http://localhost:6969";
 
 // Backend API URL
-//const API_URL = "https://community-trips-backend.onrender.com";
+const API_URL = "https://community-trips-backend.onrender.com";
 
 export default function Signup() {
   const navigate = useNavigate();

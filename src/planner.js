@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import TripDetails from './TripDetails'; // new component
-const API_URL = "http://localhost:6969";
-//const API_URL = "https://community-trips-backend.onrender.com";
+//const API_URL = "http://localhost:6969";
+const API_URL = "https://community-trips-backend.onrender.com";
 
 export default function PlannerPage({ tripType = 'current' }) {
   const [trips, setTrips] = useState([]);
