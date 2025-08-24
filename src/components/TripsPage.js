@@ -28,8 +28,8 @@ export default function TripsPage({ type = 'all' }) {
 
         let url =
           type === 'current' || type === 'upcoming' || type === 'past'
-            ? `${API_URL}/trips/getFilterTrips?addedBy=${userId}&type=${type}`
-            : `${API_URL}/trips/list?addedBy=${userId}`;
+            ? `${API_URL}/trips/getFilterTrips?addedBy=${userId}&type=${type}&limit=1000`
+            : `${API_URL}/trips/list?addedBy=${userId}&limit=1000`;
 
         const response = await fetch(url, {
           method: 'GET',

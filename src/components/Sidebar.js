@@ -48,21 +48,13 @@ export default function Sidebar({ selectedPage }) {
           CommunityTrips
         </h2>
 
-        <div
-          style={{ marginBottom: '15px', fontWeight: '600', cursor: 'pointer' }}
-          onClick={() => setShowTrips(!showTrips)}
-        >
-          Trips {showTrips ? '▾' : '▸'}
-        </div>
+       <div
+  style={{ marginBottom: '15px', fontWeight: '600', cursor: 'pointer' }}
+  onClick={() => setDrawerInfo({ open: true, type: 'upcoming' })} // or default type
+>
+  Trips 
+</div>
 
-        {showTrips && (
-          <div style={{ marginLeft: '10px' }}>
-            <div style={linkStyle(false)} onClick={() => setDrawerInfo({ open: true, type: 'current' })}>My Current Trips</div>
-            <div style={linkStyle(false)} onClick={() => setDrawerInfo({ open: true, type: 'upcoming' })}>Upcoming Trips</div>
-            <div style={linkStyle(false)} onClick={() => setDrawerInfo({ open: true, type: 'past' })}>Past Trips</div>
-            <div style={linkStyle(false)} onClick={() => setDrawerInfo({ open: true, type: 'all' })}>All Trips</div>
-          </div>
-        )}
 
         <div style={linkStyle(location.pathname === '/explore')} onClick={() => navigate('/explore')}>
           Explore

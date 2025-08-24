@@ -37,12 +37,33 @@ export default function ItineraryPage() {
   const [sightseeingQuery, setSightseeingQuery] = useState('');
   const [sightseeingResults, setSightseeingResults] = useState([]);
 
+  const [autoSightseeing, setAutoSightseeing] = useState({});
+const [autoStays, setAutoStays] = useState({});
+
+
   const [tipsContent, setTipsContent] = useState('');
   const [tipsLoading, setTipsLoading] = useState(false);
+
+  const [chatHistory, setChatHistory] = useState([]); // ⬅️ To hold full conversation
+const userId = localStorage.getItem("userId");
+
+
+   const [weatherData, setWeatherData] = useState(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
 
    // ✨ Greeting Support
   const greetings = ['Hola', 'Namaste', 'Bonjour', 'Ciao', 'Hello', 'Sat Sri Akal', 'Salam', 'Hej', 'Hallo', 'Konnichiwa', 'Ni Hao'];
   const [greetingWord, setGreetingWord] = useState('Namaste');
+
+  useEffect(() => {
+  const interval = setInterval(() => {
+    const randomGreet = greetings[Math.floor(Math.random() * greetings.length)];
+    setGreetingWord(randomGreet);
+  }, 10000); // Change greeting every 15 seconds
+
+  return () => clearInterval(interval); // Cleanup
+}, []);
+
 
   const formatTipsAsBullets = (tips) => {
   if (!tips) return '';
@@ -59,6 +80,32 @@ export default function ItineraryPage() {
   const access_token = localStorage.getItem('access_token');
   const authHeader = { headers: { Authorization: `Bearer ${access_token}` } };
   
+ const fetchWeatherData = async (cityName, startDate, endDate) => {
+  if (!cityName || !startDate || !endDate) return;
+
+  try {
+    setWeatherLoading(true);
+    const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+
+    // Calculate trip length
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const tripLength = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+    const res = await axios.get(
+      `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=${tripLength}`
+    );
+
+    setWeatherData(res.data);
+  } catch (error) {
+    console.error("Failed to fetch weather data:", error);
+    toast.error("Weather information could not be loaded.");
+  } finally {
+    setWeatherLoading(false);
+  }
+};
+
+
 
   const fetchTripTips = async () => {
       try {
@@ -85,37 +132,110 @@ export default function ItineraryPage() {
     }
 
      // 👋 Set random greeting
-    const randomGreet = greetings[Math.floor(Math.random() * greetings.length)];
-    setGreetingWord(randomGreet);
+   
 
-    const fetchTripDetails = async () => {
-      try {
-        setLoading(true);
-        const tripRes = await axios.get(`${API_URL}/trips/detail?id=${tripId}`, authHeader);
-        const tripData = tripRes.data?.trip || tripRes.data?.data;
+    
+const fetchTripDetails = async () => {
+  try {
+    setLoading(true);
 
-        if (tripData?.itineraryData) {
-          setInitialItinerary(tripData.itineraryData);
-          setFinalItinerary(tripData.itineraryData);
-        } else {
-          const genRes = await axios.post(`${API_URL}/itinerary/generate`, { tripId }, authHeader);
-          setInitialItinerary(genRes.data.data);
-          setFinalItinerary(genRes.data.data);
-          await axios.put(`${API_URL}/itinerary/save`, { tripId, itineraryData: genRes.data.data }, authHeader);
-        }
+    // 1. Fetch trip details
+    const tripRes = await axios.get(`${API_URL}/trips/detail?id=${tripId}`, authHeader);
+    const tripData = tripRes.data?.trip || tripRes.data?.data;
 
+    // 2. Fetch itinerary history
+    const historyRes = await axios.get(`${API_URL}/itinerary/list`, {
+      params: { tripId, userId },
+      ...authHeader
+    });
+
+    const historyItems = Array.isArray(historyRes.data.data) ? historyRes.data.data : [];
+
+    if (historyRes.data.success && historyItems.length > 0) {
+      // 3. Set chat history
+      const chatHistoryFormatted = historyItems
+  .filter(item => item.promptUsed !== "Initial itinerary generated from trip form")
+  .map(item => ([
+    { isUser: true, message: item.promptUsed },
+    { isUser: false, message: item.itineraryData }
+  ]))
+  .flat();
+setChatHistory(chatHistoryFormatted);
+
+// ✅ Extract and show the initial itinerary
+const initialItineraryEntry = historyItems.find(
+  item => item.promptUsed === "Initial itinerary generated from trip form"
+);
+if (initialItineraryEntry?.itineraryData) {
+  setInitialItinerary(initialItineraryEntry.itineraryData);
+}
+
+      // 4. Get latest AI-generated itinerary (sorted by createdAt descending)
+      const aiResponsesSorted = historyItems
+        .filter(item => item.itineraryData && !item.isUser)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      const latestAIMessage = aiResponsesSorted[0]?.itineraryData;
+      setFinalItinerary(latestAIMessage || '');
+
+    } else if (tripData?.itineraryData) {
+      // 5. Fallback if no chat history, use tripData
+      setInitialItinerary(tripData.itineraryData);
+      setFinalItinerary(tripData.itineraryData);
+    } else {
+      // 6. Only generate and save if "initial itinerary" not already saved
+      const alreadyExists = historyItems.some(item =>
+        item.promptUsed === "Initial itinerary generated from trip form"
+      );
+
+      if (!alreadyExists) {
+  const storedTrip = JSON.parse(localStorage.getItem("trip"));
+  const tripType = storedTrip?.tripType || "Honeymoon Trip";
+
+  const genRes = await axios.post(`${API_URL}/itinerary/generate`, {
+    tripId,
+    tripType
+  }, authHeader);
+
+        const generatedItinerary = genRes.data.data;
+
+        setInitialItinerary(generatedItinerary);
+        setFinalItinerary(generatedItinerary);
+
+        await axios.post(`${API_URL}/itinerary/save`, {
+          tripId,
+          itineraryData: generatedItinerary,
+          promptUsed: "Initial itinerary generated from trip form",
+          userId
+        }, authHeader);
+      }
+    }
         setTripName(tripData.tripName);
         setStartDate(tripData.startDate);
         setEndDate(tripData.endDate);
         setUserName(tripData.userName);
-      } catch (err) {
+const storedTrip = JSON.parse(localStorage.getItem("trip"));
+const destinationList = (
+  storedTrip?.locations?.length ? storedTrip.locations : tripData?.locations || []
+).map(loc => loc.locationName);
+
+console.log("Auto fetching cities:", destinationList); // 👈 Add this line here
+
+destinationList.forEach((city) => {
+  autoFetchSightseeing(city);
+  autoFetchStays(city);
+});
+
+        // ✅ Call weather fetch here
+fetchWeatherData(tripData.tripName || "Delhi", tripData.startDate, tripData.endDate);
+       } catch (err) {
         console.error("Error fetching itinerary:", err);
         toast.error("Could not load itinerary.");
       } finally {
         setLoading(false);
       }
     };
-
+    
     const fetchTravelers = async () => {
       try {
         const res = await axios.get(`${API_URL}/trips/invites?tripId=${tripId}`, authHeader);
@@ -133,21 +253,50 @@ export default function ItineraryPage() {
     window.scrollTo(0, 0);
   }, [tripId, navigate]);
 
-  const handleReGenerate = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.post(`${API_URL}/itinerary/re-generate`, { tripId, prompt: userPrompt }, authHeader);
-      setFinalItinerary(res.data.data);
-      setUserPrompt('');
-      await axios.put(`${API_URL}/itinerary/save`, { tripId, itineraryData: res.data.data }, authHeader);
-      toast.success("Itinerary updated!");
-    } catch (err) {
-      console.error("Error regenerating itinerary:", err);
-      toast.error("Failed to regenerate itinerary.");
-    } finally {
-      setLoading(false);
-    }
-  };
+const handleReGenerate = async () => {
+  if (!userPrompt.trim() || !finalItinerary) {
+    toast.error("Prompt or existing itinerary missing.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const res = await axios.post(`${API_URL}/itinerary/re-generate`, {
+      tripId,
+      prompt: userPrompt,
+      userId,
+       itineraryMarkdown: finalItinerary
+    }, authHeader);
+
+    const newAIResponse = res.data.data;
+
+    setFinalItinerary(newAIResponse);
+
+    setChatHistory(prev => [
+      ...prev,
+      { isUser: true, message: userPrompt },
+      { isUser: false, message: newAIResponse }
+    ]);
+
+    await axios.post(`${API_URL}/itinerary/save`, {
+      tripId,
+      itineraryData: newAIResponse,
+      promptUsed: userPrompt,
+      userId
+    }, authHeader);
+
+    setUserPrompt('');
+    toast.success("Itinerary updated!");
+  } catch (err) {
+    console.error("Error regenerating itinerary:", err);
+    toast.error("Failed to regenerate itinerary.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 const handleInvite = async () => {
   if (!inviteEmail || !inviteEmail.includes('@')) {
     toast.warning("Please enter a valid email.");
@@ -329,6 +478,82 @@ const handleDeleteTrip = () => {
       setLoading(false);
     }
   };
+
+  const autoFetchSightseeing = async (city) => {
+  try {
+    const locRes = await axios.get('https://booking-com.p.rapidapi.com/v1/hotels/locations', {
+      params: { name: city, locale: 'en-gb' },
+      headers: {
+        'X-RapidAPI-Key': process.env.REACT_APP_RAPIDAPI_KEY,
+        'X-RapidAPI-Host': 'booking-com.p.rapidapi.com'
+      }
+    });
+
+    const dest = locRes.data?.[0];
+    if (!dest?.dest_id) return;
+
+    const start_date = startDate?.split('T')[0] || '2025-10-14';
+    const end_date = endDate?.split('T')[0] || '2025-10-15';
+
+    const atRes = await axios.get('https://booking-com.p.rapidapi.com/v1/attractions/search', {
+      params: {
+        start_date,
+        end_date,
+        dest_id: dest.dest_id,
+        locale: 'en-gb',
+        currency: 'INR',
+        order_by: 'attr_book_score',
+        page_number: '0'
+      },
+      headers: {
+        'X-RapidAPI-Key': process.env.REACT_APP_RAPIDAPI_KEY,
+        'X-RapidAPI-Host': 'booking-com.p.rapidapi.com'
+      }
+    });
+
+    const attractions = atRes.data?.products || [];
+
+    setAutoSightseeing(prev => ({
+      ...prev,
+      [city]: attractions
+    }));
+  } catch (err) {
+    console.error(`Auto sightseeing fetch failed for ${city}:`, err);
+  }
+};
+
+const autoFetchStays = async (city) => {
+  try {
+    const loc = await fetchLocationDetails(city);
+    if (!loc) return;
+
+    const res = await axios.get('https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotelsByLocation', {
+      params: {
+        latitude: loc.latitude,
+        longitude: loc.longitude,
+        checkIn: startDate?.split('T')[0] || '2025-08-01',
+        checkOut: endDate?.split('T')[0] || '2025-08-05',
+        adults: '1',
+        rooms: '1',
+        currency: 'INR'
+      },
+      headers: {
+        'X-RapidAPI-Key': process.env.REACT_APP_RAPIDAPI_KEY,
+        'X-RapidAPI-Host': 'tripadvisor16.p.rapidapi.com'
+      }
+    });
+
+    const hotelData = res.data?.data?.data;
+
+    setAutoStays(prev => ({
+      ...prev,
+      [city]: hotelData || []
+    }));
+  } catch (err) {
+    console.error(`Auto stays fetch failed for ${city}:`, err);
+  }
+};
+
   return (
     <div className="itinerary-page">
       <ToastContainer position="top-right" autoClose={3000} />
@@ -339,10 +564,30 @@ const handleDeleteTrip = () => {
             we are working on your trip: <span style={{ color: '#2e7d32' }}>{tripName}</span>          </h3>
           <p style={{ color: '#777' }}>Plan a memorable experience with scenic routes and local culture.</p>
 
-          <div className="itinerary-section">
-            <h4>Initial Itinerary</h4>
-            {loading ? <p>Loading itinerary...</p> : <ReactMarkdown>{initialItinerary}</ReactMarkdown>}
-          </div>
+        <div className="itinerary-section">
+  <h4>Initial Itinerary</h4>
+  {loading ? (
+    <p>Loading itinerary...</p>
+  ) : (
+    <>
+      {initialItinerary && (
+        <div className="chat-bubble ai">
+          <ReactMarkdown>{initialItinerary}</ReactMarkdown>
+        </div>
+      )}
+
+      {chatHistory.map((entry, idx) => (
+        <div
+          key={idx}
+          className={entry.isUser ? 'chat-bubble user' : 'chat-bubble ai'}
+        >
+          <ReactMarkdown>{entry.message}</ReactMarkdown>
+        </div>
+      ))}
+    </>
+  )}
+</div>
+
         </div>
 
         <div className="chatbox">
@@ -353,7 +598,9 @@ const handleDeleteTrip = () => {
             placeholder="Share your trip requirements, changes, or preferences..."
             rows="3"
           />
-          <button onClick={handleReGenerate}>Submit</button>
+<button onClick={handleReGenerate} disabled={loading}>
+  {loading ? <span className="loader"></span> : 'Submit'}
+</button>
         </div>
       </div>
 
@@ -363,6 +610,34 @@ const handleDeleteTrip = () => {
           {startDate && endDate ? `${formatDate(startDate)} - ${formatDate(endDate)}` : ''}
         </p>
 
+{/* Weather Section */}
+        <div className="weather-section" style={{ marginBottom: '1rem' }}>
+     {weatherLoading ? (
+  <p>Loading weather...</p>
+) : weatherData ? (
+  <div className="weather-info" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+    <img
+      src={weatherData.current.condition.icon}
+      alt={weatherData.current.condition.text}
+      title={weatherData.current.condition.text}
+      style={{ width: '50px', height: '50px' }}
+    />
+    <div>
+      <strong>{weatherData.location.name}</strong>
+      <p style={{ margin: 0 }}>
+        {Math.round(weatherData.current.temp_c)}°C, {weatherData.current.condition.text}
+      </p>
+      <small style={{ color: '#555' }}>
+        Humidity: {weatherData.current.humidity}%, Wind: {Math.round(weatherData.current.wind_kph)} km/h
+      </small>
+    </div>
+  </div>
+) : (
+  <p>No weather data available.</p>
+)}
+
+
+        </div>
         <div className="tab-buttons">
           <button className={activeTab === 'final' ? 'active-tab' : ''} onClick={() => setActiveTab('final')}>Final Itinerary</button>
           <button className={activeTab === 'travelers' ? 'active-tab' : ''} onClick={() => setActiveTab('travelers')}>Travelers</button>
@@ -419,77 +694,75 @@ const handleDeleteTrip = () => {
 )}
 
           {activeTab === 'sightseeing' && (
-            <div className="sightseeing-tab">
-              <input type="text" placeholder="Enter city for sightseeing (e.g., Delhi)" value={sightseeingQuery} onChange={(e) => setSightseeingQuery(e.target.value)} />
-              <button onClick={handleSightseeingSearch}>Search Attractions</button>
-              {loading && <p>Loading sightseeing...</p>}
-              {!loading && sightseeingResults.length > 0 ? (
-                <div className="sightseeing-grid">
-                  {sightseeingResults.map((sight, i) => (
-                    <div className="sight-card" key={i}>
-                      {sight.primaryPhoto?.small && (
-                        <img
-                          src={sight.primaryPhoto.small}
-                          alt={sight.name}
-                          loading="lazy"
-                          style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px 8px 0 0' }}
-                        />
-                      )}
-                      <div style={{ padding: '0.5rem' }}>
-                        <h6 style={{ marginBottom: '0.25rem' }}>{sight.name}</h6>
-                        <p style={{ color: '#666' }}>{sight.ufiDetails?.bCityName || 'Unknown City'}</p>
-                        <p style={{ fontSize: '0.9rem', margin: '0.25rem 0' }}>{sight.shortDescription || 'No description available.'}</p>
-                        <p>⭐ {sight.reviewsStats?.combinedNumericStats?.average || 'N/A'} ({sight.reviewsStats?.combinedNumericStats?.total || 0} reviews)</p>
-                        <p><strong>₹{sight.representativePrice?.chargeAmount?.toFixed(0) || 'N/A'}</strong></p>
-                      </div>
-                    </div>
-
-                  ))}
+  <div className="sightseeing-tab">
+    {Object.entries(autoSightseeing).map(([city, sights]) => (
+      <div key={city} style={{ marginBottom: '2rem' }}>
+        <h4>{city}</h4>
+        {sights.length > 0 ? (
+          <div className="sightseeing-grid">
+            {sights.map((sight, i) => (
+              <div className="sight-card" key={i}>
+                {sight.primaryPhoto?.small && (
+                  <img
+                    src={sight.primaryPhoto.small}
+                    alt={sight.name}
+                    loading="lazy"
+                    style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px 8px 0 0' }}
+                  />
+                )}
+                <div style={{ padding: '0.5rem' }}>
+                  <h6>{sight.name}</h6>
+                  <p style={{ color: '#666' }}>{sight.ufiDetails?.bCityName || 'Unknown City'}</p>
+                  <p style={{ fontSize: '0.9rem', margin: '0.25rem 0' }}>{sight.shortDescription || 'No description available.'}</p>
+                  <p>⭐ {sight.reviewsStats?.combinedNumericStats?.average || 'N/A'} ({sight.reviewsStats?.combinedNumericStats?.total || 0} reviews)</p>
+                  <p><strong>₹{sight.representativePrice?.chargeAmount?.toFixed(0) || 'N/A'}</strong></p>
                 </div>
-              ) : (
-                !loading && <p>No sightseeing results found.</p>
-              )}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>No attractions found for {city}.</p>
+        )}
+      </div>
+    ))}
+  </div>
+)}
 
-          {activeTab === 'stays' && (
-            <div className="stays-tab">
-              <input
-                type="text"
-                placeholder="Enter location for hotels (e.g. Bengaluru)"
-                value={stayQuery}
-                onChange={(e) => setStayQuery(e.target.value)}
-              />
-              <button onClick={handleStaySearch}>Search Hotels</button>
-              {loading && <p>Loading stays...</p>}
-              {!loading && stays.length > 0 ? (
-                <div className="stays-grid">
-                  {stays.map((stay, i) => (
-                    <div className="stay-card" key={i}>
-                      <div className="stay-img">
-                        <img
-                          src={stay.cardPhotos?.[0]?.sizes?.urlTemplate?.replace('{width}', '300').replace('{height}', '200')}
-                          alt={stay.title}
-                          loading="lazy"
-                        />
-                      </div>
-                      <div className="stay-details">
-                        <h6>{stay.title}</h6>
-                        <p>{stay.primaryInfo}</p>
-                        <p>{stay.secondaryInfo}</p>
-                        <p className="stay-rating">
-                          ⭐ {stay.bubbleRating?.rating || 'N/A'} ({stay.bubbleRating?.count || '0'} reviews)
-                        </p>
-                        <p className="stay-price">{stay.priceForDisplay || 'Price not available'}</p>
-                      </div>
-                    </div>
-                  ))}
+         {activeTab === 'stays' && (
+  <div className="stays-tab">
+    {Object.entries(autoStays).map(([city, hotels]) => (
+      <div key={city} style={{ marginBottom: '2rem' }}>
+        <h5>Stays in {city}</h5>
+        {hotels.length > 0 ? (
+          <div className="stays-grid">
+            {hotels.map((stay, i) => (
+              <div className="stay-card" key={i}>
+                <div className="stay-img">
+                  <img
+                    src={stay.cardPhotos?.[0]?.sizes?.urlTemplate
+                      ?.replace('{width}', '300')
+                      ?.replace('{height}', '200')}
+                    alt={stay.title}
+                    loading="lazy"
+                  />
                 </div>
-              ) : (
-                !loading && <p>No stays found.</p>
-              )}
-            </div>
-          )}
+                <div className="stay-details">
+                  <h6>{stay.title}</h6>
+                  <p>{stay.primaryInfo}</p>
+                  <p>{stay.secondaryInfo}</p>
+                  <p>⭐ {stay.bubbleRating?.rating || 'N/A'} ({stay.bubbleRating?.count || '0'} reviews)</p>
+                  <p>{stay.priceForDisplay || 'No price info'}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>No stays found for {city}.</p>
+        )}
+      </div>
+    ))}
+  </div>
+)}
 
           {activeTab === 'tips' && (
             <div className="tips-tab">

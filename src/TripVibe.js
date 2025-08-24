@@ -4,14 +4,24 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 //const API_URL = "http://localhost:6969";
-const API_URL = "https://community-trips-backend.onrender.com";
+ const API_URL = "https://community-trips-backend.onrender.com";
 
 export default function TripVibe() {
   const navigate = useNavigate();
   const [trip, setTrip] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [selectedVibes, setSelectedVibes] = useState({});
+  const [tripType, setTripType] = useState(""); // ✅ NEW STATE
   const [loading, setLoading] = useState(false); // ⏳ loader
+
+  const tripTypeOptions = [
+    "Romantic Trip",
+    "Family Trip",
+    "Honeymoon Trip",
+    "Trip with Friends",
+    "Group Trip",
+    "Solo Trip",
+  ];
 
   useEffect(() => {
     try {
@@ -30,7 +40,9 @@ export default function TripVibe() {
       if (recsData && recsData !== "undefined") {
         setRecommendations(recsData);
         const initial = {};
-        recsData.forEach(loc => { initial[loc.location] = []; });
+        recsData.forEach((loc) => {
+          initial[loc.location] = [];
+        });
         setSelectedVibes(initial);
       }
     } catch (err) {
@@ -40,13 +52,13 @@ export default function TripVibe() {
   }, [navigate]);
 
   const togglePlace = (location, place) => {
-    setSelectedVibes(prev => {
+    setSelectedVibes((prev) => {
       const current = prev[location] || [];
       return {
         ...prev,
         [location]: current.includes(place)
-          ? current.filter(p => p !== place)
-          : [...current, place]
+          ? current.filter((p) => p !== place)
+          : [...current, place],
       };
     });
   };
@@ -69,19 +81,25 @@ export default function TripVibe() {
       return;
     }
 
+    if (!tripType) {
+      toast.warning("Please select a trip type.");
+      return;
+    }
+
     setLoading(true); // ⏳ start loading
 
     try {
-      console.log("🚀 Sending to itinerary:", { tripId, selectedVibes });
+      console.log("🚀 Sending to itinerary:", { tripId, selectedVibes, tripType });
       localStorage.setItem("selectedVibes", JSON.stringify(selectedVibes));
+      localStorage.setItem("tripType", tripType); // ✅ store trip type if needed later
 
       const response = await fetch(`${API_URL}/itinerary/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${access_token}`
+          Authorization: `Bearer ${access_token}`,
         },
-        body: JSON.stringify({ tripId, selectedVibes })
+        body: JSON.stringify({ tripId, selectedVibes, tripType }),
       });
 
       if (!response.ok) {
@@ -108,16 +126,60 @@ export default function TripVibe() {
   };
 
   return (
-    <div style={{
-      maxWidth: "800px", margin: "30px auto", padding: "20px",
-      background: "#f9fafb", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
-    }}>
+    <div
+      style={{
+        maxWidth: "800px",
+        margin: "30px auto",
+        padding: "20px",
+        background: "#f9fafb",
+        borderRadius: "12px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      }}
+    >
       <ToastContainer position="top-center" autoClose={3000} />
-      
-      <h2 style={{ marginBottom: "20px", fontSize: "24px", textAlign: "center" }}>
-        What's your trip vibe for {trip?.tripName || "your trip"}?
-      </h2>
 
+     <h2 style={{ marginBottom: "20px", fontSize: "24px", textAlign: "center" }}>
+  What's your trip vibe for{" "}
+  {trip?.tripName?.trim()
+    ? trip.tripName
+    : `${trip?.startLocation || "Unknown"} to ${
+        trip?.locations?.map((l) => l.locationName).join(", ") || "Unknown"
+      }`}
+  ?
+</h2>
+
+
+      {/* ✅ TRIP TYPE SELECTOR */}
+      <div style={{ marginBottom: "30px" }}>
+        <h3 style={{ fontSize: "18px", marginBottom: "10px" }}>Select Trip Type</h3>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+          {tripTypeOptions.map((type) => (
+            <button
+              key={type}
+onClick={() => {
+  setTripType(type);
+  const existingTrip = JSON.parse(localStorage.getItem("trip")) || {};
+  const updatedTrip = { ...existingTrip, tripType: type };
+  localStorage.setItem("trip", JSON.stringify(updatedTrip));
+  setTrip(updatedTrip); // ✅ update React state too
+}}
+              style={{
+                padding: "10px 16px",
+                borderRadius: "20px",
+                border: "none",
+                cursor: "pointer",
+                background: tripType === type ? "#4caf50" : "#e0e0e0",
+                color: tripType === type ? "white" : "black",
+                fontWeight: "bold",
+              }}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ✅ RECOMMENDATIONS */}
       {recommendations.length > 0 ? (
         recommendations.map((rec, idx) => (
           <div key={idx} style={{ marginBottom: "25px" }}>
@@ -129,14 +191,15 @@ export default function TripVibe() {
               {(rec.famousPlaces || []).map((place, i) => {
                 const isSelected = selectedVibes[rec.location]?.includes(place);
                 return (
-                  <span key={i}
+                  <span
+                    key={i}
                     style={{
                       padding: "8px 12px",
                       background: isSelected ? "#4f46e5" : "#e0e0e0",
                       color: isSelected ? "white" : "black",
                       borderRadius: "50px",
                       cursor: "pointer",
-                      transition: "all 0.2s ease"
+                      transition: "all 0.2s ease",
                     }}
                     onClick={() => togglePlace(rec.location, place)}
                   >
@@ -151,6 +214,7 @@ export default function TripVibe() {
         <p>No recommendations found. Please plan a trip first.</p>
       )}
 
+      {/* ✅ SUBMIT BUTTON */}
       <button
         style={{
           marginTop: "30px",
@@ -163,7 +227,7 @@ export default function TripVibe() {
           border: "none",
           borderRadius: "8px",
           cursor: loading ? "not-allowed" : "pointer",
-          opacity: loading ? 0.7 : 1
+          opacity: loading ? 0.7 : 1,
         }}
         onClick={handleCreateItinerary}
         disabled={loading}

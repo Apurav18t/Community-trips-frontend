@@ -6,7 +6,7 @@ import './InvitePage.css'; // 👉 You'll create this file
 
 
 //const API_URL = "http://localhost:6969";
- const API_URL = "https://community-trips-backend.onrender.com";
+const API_URL = "https://community-trips-backend.onrender.com";
 
 export default function InvitePage() {
   const { inviteId } = useParams();

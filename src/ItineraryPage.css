@@ -63,6 +63,25 @@ flex: 2; /* 40% */  display: flex;
   font-weight: bold;
   cursor: pointer;
   width: 100%;
+}.chatbox button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loader spinner */
+.loader {
+  width: 18px;
+  height: 18px;
+  border: 3px solid #fff;
+  border-top: 3px solid #6A5ACD;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 .tab-buttons {
   display: flex;
@@ -405,3 +424,60 @@ grid-template-columns: repeat(2, 1fr);
   font-size: 0.88rem;
   margin-bottom: 0.3rem;
 }
+.chat-bubble {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  max-width: 90%;
+}
+
+.chat-bubble.user {
+  background-color: #e6f7ff;
+  align-self: flex-end;
+}
+
+.chat-bubble.ai {
+  background-color: #f6f6f6;
+  align-self: flex-start;
+}
+.sightseeing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  gap: 16px; /* spacing between cards */
+}
+
+.sight-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: 0.2s ease-in-out;
+}
+
+.sight-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}.itinerary-card {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  font-family: "Segoe UI", sans-serif;
+  line-height: 1.6;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  margin-bottom: 1rem;
+}
+
+.itinerary-card h2,
+.itinerary-card h3,
+.itinerary-card h4 {
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+.itinerary-card ul {
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
